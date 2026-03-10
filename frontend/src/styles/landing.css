@@ -1,0 +1,97 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* navbar */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid #eee;
+}
+
+.nav-logo {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.nav-links a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #333;
+}
+
+/* hero */
+
+.hero {
+    text-align: center;
+    padding: 120px 20px;
+}
+
+.hero h1 {
+    font-size: 48px;
+}
+
+.hero p {
+    margin-top: 20px;
+    color: #666;
+}
+
+.hero-buttons {
+    margin-top: 30px;
+}
+
+/* buttons */
+
+.primary-btn {
+    padding: 12px 24px;
+    background: black;
+    color: white;
+    border: none;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.secondary-btn {
+    padding: 12px 24px;
+    border: 1px solid black;
+    background: white;
+    cursor: pointer;
+}
+
+/* features */
+
+.features {
+    padding: 80px 40px;
+    text-align: center;
+}
+
+.feature-grid {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.feature-card {
+    width: 220px;
+    padding: 20px;
+    border: 1px solid #eee;
+}
+
+/* cta */
+
+.cta {
+    padding: 80px 20px;
+    text-align: center;
+    background: #f7f7f7;
+}
+
+/* footer */
+
+.footer {
+    padding: 30px;
+    text-align: center;
+    border-top: 1px solid #eee; }
