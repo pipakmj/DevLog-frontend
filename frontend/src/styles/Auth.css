@@ -235,3 +235,15 @@
 .forgot-password a:hover {
     color: var(--primary);
 }
+
+.error-alert {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    text-align: center;
+    animation: fadeIn 0.4s ease-out;
+}

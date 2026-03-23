@@ -1,15 +1,40 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Auth.css';
+import { signIn } from '../api/authApi';
 
 function Signin() {
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const navigate = useNavigate(); 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
-        console.log("Login attempt:", { userEmail, userPassword });
-        alert("로그인 시도: " + userEmail);
+        setIsLoading(true);
+        setErrorMessage("");
+
+        try {
+            const res = await signIn({
+                email: userEmail,
+                password: userPassword,
+            })
+            console.log("login success", res.data);
+            const accessToken = res.data.data?.token
+            if (accessToken) {
+                localStorage.setItem("accessToken", accessToken);
+                alert("로그인 성공!");
+                navigate("/");
+            } else {
+                setErrorMessage("토큰을 받지 못했습니다. 서버 설정을 확인하세요.");
+            }
+        } catch (error) {
+            const message = error.response?.data?.message || "로그인 중 오류가 발생했습니다.";
+            setErrorMessage(message);
+        } finally { 
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -20,6 +45,7 @@ function Signin() {
                 <div className='auth-header'>
                     <h1>DevLog</h1>
                     <p>다시 오신 것을 환영합니다!</p>
+                    {errorMessage && <div className='error-alert'>{errorMessage}</div>}
                 </div>
 
                 <form className='auth-form' onSubmit={handleSubmit}>
@@ -32,6 +58,7 @@ function Signin() {
                             value={userEmail}
                             onChange={(e) => setUserEmail(e.target.value)}
                             required
+                            disabled={isLoading}
                         />
                     </div>
 
@@ -44,6 +71,7 @@ function Signin() {
                             value={userPassword}
                             onChange={(e) => setUserPassword(e.target.value)}
                             required
+                            disabled={isLoading}
                         />
                     </div>
 
@@ -51,8 +79,12 @@ function Signin() {
                         <Link to='/forgot-password'>비밀번호를 잊으셨나요?</Link>
                     </div>
 
-                    <button type='submit' className='primary-btn'>
-                        로그인
+                    <button
+                        type='submit'
+                        className='primary-btn'
+                        disabled={isLoading}
+                    >
+                        {isLoading ? "로그인 중..." : "로그인"}
                     </button>
                 </form>
 
