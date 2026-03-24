@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Auth.css';
+import { signUp } from '../api/authApi';
 
 function Signup() {
     const [userEmail, setUserEmail] = useState("");
@@ -9,20 +10,39 @@ function Signup() {
     const [userNickname, setUserNickname] = useState("");
     const [userGithubUrl, setUserGithubUrl] = useState("");
     const [isAgreed, setIsAgreed] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const navigate = useNavigate(); 
 
     const isPasswordMatch = userPassword === checkPassword;
     const canSubmit = userEmail && userPassword && isPasswordMatch && userNickname && isAgreed;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!canSubmit) {
             alert("모든 필수 항목을 입력하고 약관에 동의해주세요.");
             return;
         }
+        setIsLoading(true);
+        setErrorMessage("");
 
-        console.log("Signup attempt:", { userEmail, userNickname, userGithubUrl });
-        alert("회원가입 요청이 전송되었습니다!");
+        try {
+            const res = await signUp({
+                email: userEmail,
+                password: userPassword,
+                nickname: userNickname,
+                bio: "",
+                github_url: userGithubUrl
+            })
+            console.log("sign up success", res.data);
+            navigate("/signin")
+        } catch (error) {
+            const message = error.response?.data?.message || "회원가입입 중 오류가 발생했습니다.";
+            setErrorMessage(message);
+        } finally { 
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -33,6 +53,7 @@ function Signup() {
                 <div className='auth-header'>
                     <h1>DevLog</h1>
                     <p>새로운 여정을 시작해보세요</p>
+                    {errorMessage && <div className='error-alert'>{errorMessage}</div>}
                 </div>
 
                 <form className='auth-form' onSubmit={handleSubmit}>
@@ -45,6 +66,7 @@ function Signup() {
                             value={userEmail}
                             onChange={(e) => setUserEmail(e.target.value)}
                             required
+                            disabled={isLoading}
                         />
                     </div>
 
@@ -57,6 +79,7 @@ function Signup() {
                             value={userPassword}
                             onChange={(e) => setUserPassword(e.target.value)}
                             required
+                            disabled={isLoading}
                         />
                     </div>
 
@@ -69,6 +92,7 @@ function Signup() {
                             value={checkPassword}
                             onChange={(e) => setCheckPassword(e.target.value)}
                             required
+                            disabled={isLoading}
                         />
                         {checkPassword && !isPasswordMatch && (
                             <p className="error-message">비밀번호가 일치하지 않습니다</p>
@@ -84,6 +108,7 @@ function Signup() {
                             value={userNickname}
                             onChange={(e) => setUserNickname(e.target.value)}
                             required
+                            disabled={isLoading}
                         />
                     </div>
 
@@ -95,6 +120,7 @@ function Signup() {
                             placeholder='https://github.com/username'
                             value={userGithubUrl}
                             onChange={(e) => setUserGithubUrl(e.target.value)}
+                            disabled={isLoading}
                         />
                     </div>
 
@@ -113,9 +139,9 @@ function Signup() {
                     <button
                         type='submit'
                         className='primary-btn'
-                        disabled={!canSubmit}
+                        disabled={!canSubmit || isLoading}
                     >
-                        계정 만들러 가기
+                        {isLoading ? "처리 중..." : "계정 만들러 가기"}
                     </button>
                 </form>
 
