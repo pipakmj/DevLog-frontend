@@ -44,6 +44,42 @@
   color: var(--text-main);
 }
 
+.user-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.4rem 0.4rem 0.4rem 1rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.user-nickname {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.logout-btn {
+  background: rgba(239, 68, 68, 0.1);
+  /* 아주 연한 빨간색 */
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 0.5rem 1rem !important;
+  /* 기존 패딩 덮어쓰기 */
+  font-size: 0.85rem !important;
+  border-radius: 50px !important;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #ef4444;
+  color: white;
+  transform: translateY(0) !important;
+  /* 위로 뜨는 효과 제거 */
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
 /* Hero Section */
 section.hero {
   text-align: center;

@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Auth.css';
 import { signIn } from '../api/authApi';
+import { AuthContext } from '../context/AuthContext';
 
 function Signin() {
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
+
+    const { login } = useContext(AuthContext);
 
     const handleSubmit = async(e) => {
         e.preventDefault();
@@ -24,6 +27,7 @@ function Signin() {
             const accessToken = res.data.data?.token
             if (accessToken) {
                 localStorage.setItem("accessToken", accessToken);
+                login({ nickname: res.data.data.nickname }); 
                 alert("로그인 성공!");
                 navigate("/");
             } else {
