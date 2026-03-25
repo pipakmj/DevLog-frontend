@@ -16,3 +16,7 @@ export const signIn = (data) => {
 export const signUp = (data) => { 
     return axiosInstance.post("/auth/signup", data)
 }
+
+export const signOut = () => { 
+    return axiosInstance.post("/auth/signout");
+}

@@ -24,9 +24,11 @@ function Signin() {
                 password: userPassword,
             })
             console.log("login success", res.data);
-            const accessToken = res.data.data?.token
+            const accessToken = res.data.data?.accessToken;
+            const refreshToken = res.data.data?.refreshToken;
             if (accessToken) {
                 localStorage.setItem("accessToken", accessToken);
+                localStorage.setItem("refreshToken", refreshToken);
                 login({ nickname: res.data.data.nickname }); 
                 alert("로그인 성공!");
                 navigate("/");

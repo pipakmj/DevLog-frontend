@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect, useCallback } from "react";
-import { getExpiryTime } from "../api/authApi";
+import { getExpiryTime, signOut } from "../api/authApi";
 
 export const AuthContext = createContext();
 
@@ -12,13 +12,20 @@ export const AuthProvider = ({ children }) => {
         return nickname ? { nickname } : null;
     });
 
-    const logout = useCallback(() => {
-        setIsLoggedIn(false);
-        setUser(null);
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("nickname");
-        alert("세션이 만료되어 로그아웃 되었습니다.");
-        window.location.href = "/signin";
+    const logout = useCallback(async () => {
+        try {
+            await signOut();
+        } catch (error) {
+            console.log("Logout API error: ", error)
+        } finally { 
+            setIsLoggedIn(false);
+            setUser(null);
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("nickname");
+            alert("로그아웃 되었습니다.");
+            window.location.href = "/signin";
+        }
     }, []);
 
     const login = (userData) => {
