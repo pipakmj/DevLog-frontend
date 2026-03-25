@@ -27,9 +27,7 @@ axiosInstance.interceptors.response.use(
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true; // 무한 루프 방지
             try {
-                const refreshToken = localStorage.getItem("refreshToken");
-                if (!refreshToken) throw new Error("No refresh token");
-                const res = await axios.post("http://localhost:8080/auth/refresh", { refreshToken: refreshToken });
+                const res = await axios.post("http://localhost:8080/auth/refresh", {}, { withCredentials: true });
                 const newAccessToken = res.data?.data.access_token;
                 localStorage.setItem("accessToken", newAccessToken);
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
