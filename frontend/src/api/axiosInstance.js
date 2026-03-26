@@ -31,6 +31,7 @@ axiosInstance.interceptors.response.use(
                 const newAccessToken = res.data?.data.access_token;
                 localStorage.setItem("accessToken", newAccessToken);
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                console.log("토큰이 재발급 되었습니다.")
                 return axiosInstance(originalRequest);
 
             } catch (err) {
