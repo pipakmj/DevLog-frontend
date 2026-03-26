@@ -24,7 +24,7 @@ function Signin() {
                 password: userPassword,
             })
             console.log("login success", res.data);
-            const accessToken = res.data.data?.token
+            const accessToken = res.data.data?.accessToken;
             if (accessToken) {
                 localStorage.setItem("accessToken", accessToken);
                 login({ nickname: res.data.data.nickname }); 
