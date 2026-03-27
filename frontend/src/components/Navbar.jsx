@@ -12,7 +12,7 @@ export default function Navbar() {
                 <Link to="/#projects">Projects</Link>
                 {isLoggedIn && user ? (
                     <div className="user-nav-group">
-                        <span className="user-nickname">{user?.nickname}님</span>
+                        <Link to="/mypage" className="user-nickname">{user?.nickname}님</Link>
                         <button className="logout-btn" onClick={logout}>
                             Logout
                         </button>
