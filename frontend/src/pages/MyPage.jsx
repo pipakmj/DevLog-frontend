@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { getMyProfile, updateMyProfile } from '../api/userApi';
+import { getMyInfo, updateMyInfo } from '../api/userApi';
 import '../styles/MyPage.css';
 
 function MyPage() {
@@ -19,7 +19,7 @@ function MyPage() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await getMyProfile();
+                const res = await getMyInfo();
                 setUserInfo(res.data.data);
             } catch (error) {
                 console.error("프로필을 불러오는데 실패했습니다.", error);
@@ -40,7 +40,7 @@ function MyPage() {
         e.preventDefault();
         setIsSaving(true);
         try {
-            const res = await updateMyProfile({
+            const res = await updateMyInfo({
                 nickname: userInfo.nickname,
                 bio: userInfo.bio,
                 github_url: userInfo.github_url
