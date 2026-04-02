@@ -9,7 +9,7 @@ export default function Navbar() {
             <Link to="/" className="nav-logo">DevLog</Link>
             <div className="nav-links">
                 <Link to="/#features">Features</Link>
-                <Link to="/#projects">Projects</Link>
+                <Link to="/projectlist">Projects</Link>
                 {isLoggedIn && user ? (
                     <div className="user-nav-group">
                         <Link to="/mypage" className="user-nickname">{user?.nickname}님</Link>

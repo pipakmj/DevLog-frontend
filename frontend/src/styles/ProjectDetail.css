@@ -1,0 +1,268 @@
+/* ProjectDetail.css - Horizontal Journey Theme */
+
+.detail-container {
+    padding: 100px 20px 60px;
+    background: #0a0a0a;
+    min-height: 100vh;
+    color: #f8fafc;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* 상단 히어로 섹션 */
+.detail-header {
+    margin-bottom: 50px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 40px;
+}
+
+.status-badge {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    display: inline-block;
+    margin-bottom: 16px;
+}
+
+.detail-header h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin-bottom: 24px;
+    background: linear-gradient(to right, #ffffff, #94a3b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.detail-links {
+    display: flex;
+    gap: 12px;
+}
+
+.link-btn {
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.9rem;
+}
+
+.link-btn.github {
+    background: #24292f;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.link-btn.demo {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+}
+
+.link-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+/* 상세 설명 섹션 */
+.description-section {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 40px;
+    border-radius: 24px;
+    margin-bottom: 60px;
+}
+
+.description-section h3 {
+    font-size: 1.4rem;
+    color: #e2e8f0;
+    margin-bottom: 20px;
+}
+
+.project-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #94a3b8;
+}
+
+/* 🏁 가로 타임라인 컨테이너 */
+.horizontal-timeline-container {
+    position: relative;
+    padding: 60px 0;
+    overflow-x: auto;
+    padding-bottom: 40px;
+    scrollbar-width: thin;
+    scrollbar-color: #3b82f6 #0a0a0a;
+    background: transparent;
+}
+
+/* 수평선 아이템 박스의 100%를 다 채움 */
+.timeline-line {
+    position: absolute;
+    top: 25px;
+    /* node-dot 위치에 맞춤 */
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right,
+            rgba(59, 130, 246, 0) 0%,
+            #3b82f6 5%,
+            #3b82f6 95%,
+            rgba(59, 130, 246, 0) 100%);
+    z-index: 1;
+}
+
+/* 타임라인 박스가 선의 기준점 */
+.timeline-items {
+    display: flex;
+    padding: 0 100px;
+    min-width: max-content;
+    position: relative;
+    z-index: 2;
+}
+
+.timeline-item {
+    position: relative;
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 30px;
+}
+
+/* 타임라인 노드(점) */
+.timeline-node {
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.node-dot {
+    width: 16px;
+    height: 16px;
+    background: #3b82f6;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #3b82f6, 0 0 5px white;
+    border: 3px solid #0a0a0a;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.timeline-item:hover .node-dot {
+    transform: scale(1.6);
+    background: #60a5fa;
+}
+
+.node-date {
+    margin-top: 12px;
+    font-size: 0.8rem;
+    color: #3b82f6;
+    font-weight: 700;
+}
+
+/* 커밋 상세 카드 */
+.timeline-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 24px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+    width: 100%;
+    text-align: left;
+}
+
+.timeline-item:hover .timeline-card {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.3);
+    transform: translateY(-8px);
+}
+
+.commit-hash {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-family: 'Courier New', Courier, monospace;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.commit-msg {
+    font-size: 1rem;
+    color: #f1f5f9;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.commit-author {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-style: italic;
+    display: block;
+}
+
+/* 우측 하단 관리 버튼 그룹 */
+.admin-quick-actions {
+    display: flex;
+    justify-content: flex-end;
+    /* 우측 정렬 */
+    gap: 12px;
+    margin-top: 60px;
+    /* 타임라인과의 간격 */
+    padding-bottom: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    /* 경계선 추가로 구분감 부여 */
+    padding-top: 30px;
+}
+
+.admin-btn {
+    padding: 10px 20px;
+    /* 하단 배치는 조금 더 클릭하기 좋게 키움 */
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 로딩 애니메이션 */
+.loading-screen {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #0a0a0a;
+    color: #3b82f6;
+}
+
+/* 스크롤바 커스텀 */
+.horizontal-timeline-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.horizontal-timeline-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+}
+
+.horizontal-timeline-container::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.3);
+    border-radius: 10px;
+}
+
+.horizontal-timeline-container::-webkit-scrollbar-thumb:hover {
+    background: #3b82f6;
+}
