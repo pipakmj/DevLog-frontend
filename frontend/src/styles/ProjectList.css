@@ -32,6 +32,30 @@
     margin: 0 auto;
 }
 
+.list-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.add-project-btn {
+    padding: 12px 24px;
+    background: #3b82f6;
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.add-project-btn:hover {
+    transform: translateY(-3px);
+    background: #60a5fa;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.6);
+}
+
 /* 프로젝트 그리드 레이아웃 */
 .project-grid {
     display: grid;

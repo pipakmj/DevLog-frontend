@@ -212,6 +212,32 @@
     display: block;
 }
 
+/* 우측 하단 관리 버튼 그룹 */
+.admin-quick-actions {
+    display: flex;
+    justify-content: flex-end;
+    /* 우측 정렬 */
+    gap: 12px;
+    margin-top: 60px;
+    /* 타임라인과의 간격 */
+    padding-bottom: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    /* 경계선 추가로 구분감 부여 */
+    padding-top: 30px;
+}
+
+.admin-btn {
+    padding: 10px 20px;
+    /* 하단 배치는 조금 더 클릭하기 좋게 키움 */
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 /* 로딩 애니메이션 */
 .loading-screen {
     height: 100vh;

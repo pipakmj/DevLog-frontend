@@ -28,6 +28,10 @@ function ProjectList() {
             <header className='list-header'>
                 <h1>Showcase</h1>
                 <p>지금까지 진행한 프로젝트의 히스토리와 실시간 현황입니다.</p>
+
+                <div className='list-actions'>
+                    <Link to="/project/add" className='add-project-btn'>프로젝트 등록</Link>
+                </div>
             </header>
 
             <div className='project-grid'>
@@ -42,10 +46,10 @@ function ProjectList() {
                         <div className='card-content'>
                                 <h3>{project.title}</h3>
                                 <p>{project.description}</p>
-                                <p>{project.demo_url}</p>
-                                <p>{project.github_url}</p>
+                                <p>{project.demoUrl}</p>
+                                <p>{project.githubUrl}</p>
                                 <div className="card-tags">
-                                    {project.tech_stack?.split(",").map(tag => (
+                                {project.techStack?.split(",").map(tag => (
                                         <span key={tag} className="tag-badge">{tag}</span>
                                     ))}
                                 </div>

@@ -6,6 +6,7 @@ import Signup from "../pages/Signup";
 import MyPage from "../pages/MyPage";
 import ProjectList from "../pages/ProjectList";
 import ProjectDetail from "../pages/ProjectDetail";
+import ProjectForm from "../pages/ProjectForm";
 
 export const router = createBrowserRouter([
     {
@@ -35,6 +36,14 @@ export const router = createBrowserRouter([
             {
                 path: "/project/:projectId",
                 element: <ProjectDetail />
+            },
+            {
+                path: "/project/add",
+                element: <ProjectForm />
+            },
+            {
+                path: "/project/edit/:projectId",
+                element: <ProjectForm />
             },
         ]
     },
