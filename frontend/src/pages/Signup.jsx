@@ -38,7 +38,7 @@ function Signup() {
             console.log("sign up success", res.data);
             navigate("/signin")
         } catch (error) {
-            const message = error.response?.data?.message || "회원가입입 중 오류가 발생했습니다.";
+            const message = error.response?.data?.message || "회원가입 중 오류가 발생했습니다.";
             setErrorMessage(message);
         } finally { 
             setIsLoading(false);
