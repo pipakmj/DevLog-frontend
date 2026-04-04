@@ -8,7 +8,6 @@ function MyPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
-    // 프로필 정보 상태
     const [userInfo, setUserInfo] = useState({
         email: '',
         nickname: '',
@@ -45,8 +44,7 @@ function MyPage() {
                 bio: userInfo.bio,
                 github_url: userInfo.github_url
             });
-
-            // 전역 상태(nickname 등) 업데이트
+            
             login({ nickname: userInfo.nickname });
             alert("프로필이 성공적으로 수정되었습니다!");
         } catch (error) {
