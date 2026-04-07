@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getProjects, getAllProjects } from '../api/projectApi';
 import { AuthContext } from '../context/AuthContext';
 import '../styles/ProjectList.css';
@@ -9,6 +9,7 @@ function ProjectList() {
     const [isLoading, setIsLoading] = useState(true);
     const [viewMode, setViewMode] = useState("all");
     const { isLoggedIn } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -25,6 +26,14 @@ function ProjectList() {
         fetchProjects();
     }, [viewMode]);
 
+    const handleAddProject = () => {
+        if (isLoggedIn) {
+            navigate("/project/add");
+        } else {
+            navigate("/signin", { state: { from: "/project/add" } });
+        }
+    };
+
     if (isLoading) return <div className='list-loading'>프로젝트 로딩중..</div>;
 
     return (
@@ -34,7 +43,7 @@ function ProjectList() {
                 <p>지금까지 진행한 프로젝트의 히스토리와 실시간 현황입니다.</p>
 
                 <div className='list-actions'>
-                    <Link to="/project/add" className='add-project-btn'>프로젝트 등록</Link>
+                    <button onClick={handleAddProject} className='add-project-btn' style={{cursor: 'pointer', border: 'none'}}>프로젝트 등록</button>
                 </div>
             </header>
 
