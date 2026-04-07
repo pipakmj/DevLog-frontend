@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { getProjects, deleteProject } from '../api/projectApi';
+import { getProjects, deleteProject, getAllProjects } from '../api/projectApi';
 import { getRepoCommits, parseGithubUrl } from '../api/githubApi';
+import { AuthContext } from "../context/AuthContext"
 import '../styles/ProjectDetail.css';
 
 function ProjectDetail() {
@@ -9,13 +10,14 @@ function ProjectDetail() {
     const [project, setProject] = useState(null);
     const [commits, setCommits] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { isLoggedIn, user } = useContext(AuthContext);
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchAllData = async () => {
             try {
-                const res = await getProjects();
+                const res = await getAllProjects();
                 const target = res.data.data.find(p => p.id === parseInt(projectId));
                 setProject(target);
 
@@ -99,10 +101,10 @@ function ProjectDetail() {
                 </div>
             </section>
 
-            <div className="admin-actions">
+            {isLoggedIn && user?.id === project?.id && (<div className="admin-actions">
                 <Link to={`/project/edit/${project.id}`} className="link-btn edit">Edit</Link>
                 <button onClick={handleDelete} className="link-btn delete">Delete</button>
-            </div>
+            </div>)}
 
         </div>
     )

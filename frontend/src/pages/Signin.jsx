@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/Auth.css';
 import { signIn } from '../api/authApi';
 import { AuthContext } from '../context/AuthContext';
@@ -10,6 +10,9 @@ function Signin() {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const from = location.state?.from || "/";
 
     const { login } = useContext(AuthContext);
 
@@ -29,7 +32,7 @@ function Signin() {
                 localStorage.setItem("accessToken", accessToken);
                 login({ nickname: res.data.data.nickname }); 
                 alert("로그인 성공!");
-                navigate("/");
+                navigate(from, {replace: true});
             } else {
                 setErrorMessage("토큰을 받지 못했습니다. 서버 설정을 확인하세요.");
             }

@@ -1,16 +1,21 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
-import { getProjects } from '../api/projectApi';
+import { useContext, useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+import { getProjects, getAllProjects } from '../api/projectApi';
+import { AuthContext } from '../context/AuthContext';
 import '../styles/ProjectList.css';
 
 function ProjectList() {
     const [projects, setProjects] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [viewMode, setViewMode] = useState("all");
+    const { isLoggedIn } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProjects = async () => {
+            setIsLoading(true);
             try {
-                const res = await getProjects();
+                const res = viewMode === "all" ? await getAllProjects() : await getProjects();
                 setProjects(res.data.data);
             } catch (error) {
                 console.log("프로젝트 목록을 불러오지 못했습니다.", error);
@@ -19,7 +24,15 @@ function ProjectList() {
             }
         };
         fetchProjects();
-    }, []);
+    }, [viewMode]);
+
+    const handleAddProject = () => {
+        if (isLoggedIn) {
+            navigate("/project/add");
+        } else {
+            navigate("/signin", { state: { from: "/project/add" } });
+        }
+    };
 
     if (isLoading) return <div className='list-loading'>프로젝트 로딩중..</div>;
 
@@ -30,9 +43,28 @@ function ProjectList() {
                 <p>지금까지 진행한 프로젝트의 히스토리와 실시간 현황입니다.</p>
 
                 <div className='list-actions'>
-                    <Link to="/project/add" className='add-project-btn'>프로젝트 등록</Link>
+                    <button onClick={handleAddProject} className='add-project-btn' style={{cursor: 'pointer', border: 'none'}}>프로젝트 등록</button>
                 </div>
             </header>
+
+            <div className="project-tabs">
+                {isLoggedIn && (
+                    <div>
+                        <button
+                            className={viewMode === "all" ? "active" : ""}
+                            onClick={() => setViewMode("all")}
+                        >
+                            All Projects
+                        </button>
+                        <button
+                            className={viewMode === "mine" ? "active" : ""}
+                            onClick={() => setViewMode("mine")}
+                        >
+                            My Projects
+                        </button>
+                    </div>
+                )}
+            </div>
 
             <div className='project-grid'>
                 {projects.map(project => (
