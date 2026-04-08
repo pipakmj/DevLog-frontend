@@ -6,25 +6,49 @@ import '../styles/ProjectList.css';
 
 function ProjectList() {
     const [projects, setProjects] = useState([]);
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [viewMode, setViewMode] = useState("all");
     const { isLoggedIn } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchProjects = async () => {
-            setIsLoading(true);
-            try {
-                const res = viewMode === "all" ? await getAllProjects() : await getProjects();
-                setProjects(res.data.data);
-            } catch (error) {
-                console.log("프로젝트 목록을 불러오지 못했습니다.", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchProjects();
+        setProjects([]);
+        setPage(0);
+        setHasMore(true);
+        fetchProjects(0, true);
     }, [viewMode]);
+
+    const fetchProjects = async (pageNum, isReset = false) => {
+        setIsLoading(true);
+        try {
+            const size = 9;
+            const res = viewMode === "all"
+                ? await getAllProjects(pageNum, 9)
+                : await getProjects(pageNum, 9);
+            
+            const newData = res.data.data;
+            if (newData.length < size) {
+                setHasMore(false);
+            }
+            else {
+                setHasMore(true);
+            }
+
+            setProjects(prev => isReset ? newData : [...prev, ...newData]);
+        } catch (error) {
+            console.log("프로젝트 목록을 불러오지 못했습니다.", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleLoadMore = () => {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        fetchProjects(nextPage);
+    };
 
     const handleAddProject = () => {
         if (isLoggedIn) {
@@ -95,6 +119,17 @@ function ProjectList() {
                     </article>
                 ))}
             </div>
+            {hasMore && (
+                <div className="load-more-container">
+                    <button
+                        onClick={handleLoadMore}
+                        className="load-more-btn"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? "Loading..." : "Load More Projects"}
+                    </button>
+                </div>
+            )}
         </div>
     )
 }
