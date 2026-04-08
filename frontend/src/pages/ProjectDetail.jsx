@@ -101,7 +101,7 @@ function ProjectDetail() {
                 </div>
             </section>
 
-            {isLoggedIn && user?.id === project?.id && (<div className="admin-actions">
+            {isLoggedIn && user?.id === project?.user_id && (<div className="admin-actions">
                 <Link to={`/project/edit/${project.id}`} className="link-btn edit">Edit</Link>
                 <button onClick={handleDelete} className="link-btn delete">Delete</button>
             </div>)}
