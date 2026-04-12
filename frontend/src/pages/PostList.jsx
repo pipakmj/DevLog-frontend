@@ -5,13 +5,22 @@ import '../styles/PostList.css';
 
 function PostList() {
     const [posts, setPosts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // 임시 데이터 또는 API 호출
-        setPosts([
-            { id: 1, title: "Axios 인터셉터 정복하기", author: "이몽룡", date: "2024-04-07", tags: ["Axios", "Auth"], views: 85, projectName: "DevLog 서비스" },
-        ]);
+        const fetchPosts = async () => {
+            setIsLoading(true);
+            try {
+                const res = await getAllPosts();
+                setPosts(res.data.data);
+            } catch (error) {
+                console.log("게시글 목록을 가져오지 못했습니다.", error);
+            } finally { 
+                setIsLoading(false);
+            }
+        };
+        fetchPosts();
     }, []);
 
     return (

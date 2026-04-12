@@ -17,17 +17,6 @@ function PostDetail() {
                 setPost(res.data.data);
             } catch (error) {
                 console.error("게시글 로드 실패", error);
-                // 테스트용 더미 데이터 (백엔드 미완성 시)
-                setPost({
-                    id: postId,
-                    title: "Vite + React 초기 세팅하기",
-                    content: "### 초기 세팅 기록\n\n1. Vite 설치\n2. ESLint 설정\n\n```javascript\nconsole.log('Hello DevLog');\n```",
-                    author: "홍길동",
-                    date: "2024-04-08",
-                    projectName: "DevLog 서비스",
-                    projectId: 1,
-                    tags: "React,Vite"
-                });
             } finally {
                 setIsLoading(false);
             }
@@ -51,7 +40,7 @@ function PostDetail() {
                         <span className="date">{post.date}</span>
                     </div>
                     <div className="post-tags">
-                        {post.tags?.split(",").map(tag => (
+                        {post.tags?.map(tag => (
                             <span key={tag} className="tag">#{tag.trim()}</span>
                         ))}
                     </div>
