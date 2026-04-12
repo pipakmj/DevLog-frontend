@@ -10,14 +10,7 @@ function PostList() {
     useEffect(() => {
         // 임시 데이터 또는 API 호출
         setPosts([
-            { id: 1, title: "Vite + React 초기 세팅하기", author: "홍길동", date: "2024-04-08", tags: ["React", "Vite"], views: 120, projectName: "DevLog 서비스" },
-            { id: 2, title: "Axios 인터셉터 정복하기", author: "이몽룡", date: "2024-04-07", tags: ["Axios", "Auth"], views: 85, projectName: "DevLog 서비스" },
-            { id: 3, title: "Axios 인터셉터 정복하기", author: "이몽룡", date: "2024-04-07", tags: ["Axios", "Auth"], views: 85, projectName: "DevLog 서비스" },
-            { id: 4, title: "Axios 인터셉터 정복하기", author: "이몽룡", date: "2024-04-07", tags: ["Axios", "Auth"], views: 85, projectName: "DevLog 서비스" },
-            { id: 5, title: "Axios 인터셉터 정복하기", author: "이몽룡", date: "2024-04-07", tags: ["Axios", "Auth"], views: 85, projectName: "DevLog 서비스" },
-            { id: 6, title: "Axios 인터셉터 정복하기", author: "이몽룡", date: "2024-04-07", tags: ["Axios", "Auth"], views: 85, projectName: "DevLog 서비스" },
-            { id: 7, title: "Axios 인터셉터 정복하기", author: "이몽룡", date: "2024-04-07", tags: ["Axios", "Auth"], views: 85, projectName: "DevLog 서비스" },
-            { id: 8, title: "Axios 인터셉터 정복하기", author: "이몽룡", date: "2024-04-07", tags: ["Axios", "Auth"], views: 85, projectName: "DevLog 서비스" },
+            { id: 1, title: "Axios 인터셉터 정복하기", author: "이몽룡", date: "2024-04-07", tags: ["Axios", "Auth"], views: 85, projectName: "DevLog 서비스" },
         ]);
     }, []);
 

@@ -1,0 +1,76 @@
+.post-detail-container {
+    max-width: 800px;
+    margin: 120px auto 80px;
+    padding: 0 20px;
+}
+
+.post-detail-header {
+    margin-bottom: 50px;
+}
+
+.project-link {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.3s;
+}
+
+.project-link:hover {
+    color: #60a5fa;
+}
+
+.post-detail-header h1 {
+    font-size: 3rem;
+    margin: 20px 0;
+    color: #f1f5f9;
+    line-height: 1.2;
+}
+
+.post-info {
+    color: #94a3b8;
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+.post-tags {
+    display: flex;
+    gap: 12px;
+}
+
+.post-content {
+    background: transparent;
+    padding: 20px 0;
+    line-height: 1.8;
+    color: #e2e8f0;
+}
+
+/* 마크다운 스타일 커스텀 */
+.wmde-markdown {
+    background: transparent !important;
+    font-size: 1.1rem !important;
+    color: #e2e8f0 !important;
+}
+
+.post-detail-footer {
+    margin-top: 80px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: center;
+}
+
+.list-btn {
+    padding: 12px 30px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.list-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+}
