@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { deletePost, getPostDetail, updatePostViewCount } from '../api/postApi';
 import MDEditor from '@uiw/react-md-editor';
 import { AuthContext } from '../context/AuthContext';
+import { formatDate } from '../utils/formatDate';
 import '../styles/PostDetail.css';
 
 function PostDetail() {
@@ -55,7 +56,7 @@ function PostDetail() {
                     <div className="post-info">
                         <span className="author">by {post.author}</span>
                         <span className="divider">·</span>
-                        <span className="date">{post.date}</span>
+                        <span className="date">{formatDate(post.date)}</span>
                         <span className="divider">·</span>
                         <span className='post-views'> views {post.views || 0}</span>
                     </div>

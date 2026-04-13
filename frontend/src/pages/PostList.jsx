@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAllPosts } from '../api/postApi';
+import { formatDate } from '../utils/formatDate';
 import '../styles/PostList.css';
 
 function PostList() {
@@ -36,7 +37,7 @@ function PostList() {
                     <article key={post.id} className="post-card">
                         <div className="post-meta">
                             <span className="post-project">{post.projectName}</span>
-                            <span className="post-date">{post.date}</span>
+                            <span className="post-date">{formatDate(post.date)}</span>
                         </div>
                         <Link to={`/posts/${post.id}`} className="post-title">
                             <h3>{post.title}</h3>
