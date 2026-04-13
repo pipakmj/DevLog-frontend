@@ -7,6 +7,9 @@ import MyPage from "../pages/MyPage";
 import ProjectList from "../pages/ProjectList";
 import ProjectDetail from "../pages/ProjectDetail";
 import ProjectForm from "../pages/ProjectForm";
+import PostList from "../pages/PostList";
+import PostWrite from "../pages/PostWrite";
+import PostDetail from "../pages/PostDetail";
 
 export const router = createBrowserRouter([
     {
@@ -44,6 +47,22 @@ export const router = createBrowserRouter([
             {
                 path: "/project/edit/:projectId",
                 element: <ProjectForm />
+            },
+            {
+                path: "/posts",
+                element: <PostList />
+            },
+            {
+                path: "/posts/write",
+                element: <PostWrite />
+            },
+            {
+                path: "/posts/edit/:postId",
+                element: <PostWrite />
+            },
+            {
+                path: "/posts/:postId",
+                element: <PostDetail />
             },
         ]
     },

@@ -1,0 +1,174 @@
+.post-list-container {
+    max-width: 1000px;
+    margin: 100px auto 60px;
+    padding: 0 20px;
+}
+
+/* 상단 헤더 영역 */
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 60px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 30px;
+}
+
+.post-header h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    background: linear-gradient(to right, #ffffff, #94a3b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.post-header p {
+    color: #94a3b8;
+    font-size: 1.1rem;
+}
+
+.write-btn {
+    padding: 12px 28px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.write-btn:hover {
+    transform: translateY(-3px);
+    background: #60a5fa;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+}
+
+/* 게시글 리스트 아이템 */
+.post-items {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.post-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 24px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.post-card:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(59, 130, 246, 0.3);
+    transform: translateX(10px);
+}
+
+.post-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: #3b82f6;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.post-card:hover::before {
+    opacity: 1;
+}
+
+/* 메타 정보 (프로젝트명, 날짜) */
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.post-project {
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+    padding: 4px 12px;
+    border-radius: 100px;
+}
+
+.post-date {
+    color: #64748b;
+}
+
+/* 제목 */
+.post-title {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.post-title h3 {
+    font-size: 1.5rem;
+    line-height: 1.4;
+    color: #f1f5f9;
+    transition: color 0.3s;
+}
+
+.post-card:hover .post-title h3 {
+    color: #3b82f6;
+}
+
+/* 태그 */
+.post-tags {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.tag {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+/* 푸터 (작성자, 조회수) */
+.post-footer {
+    display: flex;
+    gap: 20px;
+    font-size: 0.85rem;
+    color: #64748b;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    padding-top: 20px;
+}
+
+.post-author {
+    font-weight: 600;
+    color: #94a3b8;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.post-card {
+    animation: fadeIn 0.5s ease-out forwards;
+}
