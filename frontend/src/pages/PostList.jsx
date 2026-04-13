@@ -46,7 +46,7 @@ function PostList() {
                             {post.tags.map(tag => <span key={tag} className="tag">#{tag}</span>)}
                         </div>
                         <div className="post-footer">
-                            <span className="post-author">by {post.author}</span>
+                            <span className="post-author">by. {post.author}</span>
                             <span className="post-views">조회수 {post.views}</span>
                         </div>
                     </article>

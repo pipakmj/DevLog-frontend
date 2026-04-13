@@ -50,7 +50,6 @@ function PostWrite() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const postData = { title, content, projectId: selectedProject, tags: tags.join(",") }
-        console.log("postsdata: " + postData)
         try {
             if (isEditMode) {
                 await updatePost(postId, postData);

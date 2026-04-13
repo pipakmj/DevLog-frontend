@@ -54,7 +54,7 @@ function PostDetail() {
                 </div>
                 <h1>{post.title}</h1>
                 <div className="post-info">
-                    <span className="author">by.{post.author}</span>
+                    <span className="author">by. {post.author}</span>
                     <span className="divider">·</span>
                     <span className="date">{formatDate(post.date)}</span>
                     <span className='post-views'>{post.views || 0} views</span>
