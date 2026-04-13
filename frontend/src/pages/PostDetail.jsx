@@ -69,7 +69,7 @@ function PostDetail() {
                 <MDEditor.Markdown source={post.content} />
                 {isLoggedIn && user?.nickname === post?.author && (
                     <div className="admin-actions">
-                        <button className="edit-btn">수정</button>
+                        <button onClick={() => navigate(`/posts/edit/${postId}`)} className="edit-btn">수정</button>
                         <button onClick={handleDelete} className="delete-btn">삭제</button>
                     </div>
                 )}

@@ -12,6 +12,10 @@ export const createPost = (postData) => {
     return axiosInstance.post("/api/posts", postData);
 };
 
+export const updatePost = (postId, updatePostData) => {
+    return axiosInstance.patch(`/api/posts/edit/${postId}`, updatePostData);
+ };
+
 export const updatePostViewCount = (postId) => { 
     return axiosInstance.patch(`/api/posts/${postId}/views`);
 };

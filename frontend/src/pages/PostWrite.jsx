@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import { getProjects } from '../api/projectApi';
-import { createPost } from '../api/postApi';
+import { createPost, getPostDetail, updatePost } from '../api/postApi';
 import '../styles/PostWrite.css';
 
 function PostWrite() {
     const navigate = useNavigate();
+    const { postId } = useParams();
+    const isEditMode = !!postId;
 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -19,7 +21,17 @@ function PostWrite() {
         getProjects().then(res => {
             setMyProjects(res.data.data);
         }).catch(err => console.error("프로젝트 로드 실패", err));
-    }, []);
+
+        if (isEditMode) {
+            getPostDetail(postId).then(res => {
+                const data = res.data.data;
+                setTitle(data.title);
+                setContent(data.content);
+                setTags(data.tags);
+                setSelectedProject(data.projectId);
+            });
+        }
+    }, [postId]);
 
     const handleTagKeyDown = (e) => {
         if (e.key === 'Enter' && tagInput.trim() !== '') {
@@ -37,16 +49,17 @@ function PostWrite() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const postData = { title, content, projectId: selectedProject, tags: tags.join(",") }
+        console.log("postsdata: " + postData)
         try {
-            const postData = {
-                title,
-                content,
-                projectId: selectedProject,
-                tags: tags.join(",")
-            };
-            await createPost(postData);
-            alert("데브로그가 기록되었습니다!");
-            navigate("/posts");
+            if (isEditMode) {
+                await updatePost(postId, postData);
+                alert("수정되었습니다.");
+            } else { 
+                await createPost(postData);
+                alert("데브로그가 기록되었습니다!");
+            }
+            navigate(`/posts/${postId || ""}`);
         } catch (error) {
             console.error("저장 실패", error);
         }

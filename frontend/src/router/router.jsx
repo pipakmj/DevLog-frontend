@@ -57,6 +57,10 @@ export const router = createBrowserRouter([
                 element: <PostWrite />
             },
             {
+                path: "/posts/edit/:postId",
+                element: <PostWrite />
+            },
+            {
                 path: "/posts/:postId",
                 element: <PostDetail />
             },
