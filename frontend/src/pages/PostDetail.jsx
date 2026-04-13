@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { getPostDetail } from '../api/postApi';
+import { getPostDetail, updatePostViewCount } from '../api/postApi';
 import MDEditor from '@uiw/react-md-editor';
 import '../styles/PostDetail.css';
 
@@ -13,6 +13,8 @@ function PostDetail() {
     useEffect(() => {
         const fetchPost = async () => {
             try {
+                await updatePostViewCount(postId);
+
                 const res = await getPostDetail(postId);
                 setPost(res.data.data);
             } catch (error) {
@@ -23,6 +25,7 @@ function PostDetail() {
         };
         fetchPost();
     }, [postId]);
+
     if (isLoading) return <div className="loading">글을 불러오는 중...</div>;
     if (!post) return <div className="error">게시글을 찾을 수 없습니다.</div>;
     return (
@@ -38,6 +41,8 @@ function PostDetail() {
                         <span className="author">by {post.author}</span>
                         <span className="divider">·</span>
                         <span className="date">{post.date}</span>
+                        <span className="divider">·</span>
+                        <span className='post-views'> views {post.views || 0}</span>
                     </div>
                     <div className="post-tags">
                         {post.tags?.map(tag => (
