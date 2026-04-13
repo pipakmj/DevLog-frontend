@@ -15,3 +15,7 @@ export const createPost = (postData) => {
 export const updatePostViewCount = (postId) => { 
     return axiosInstance.patch(`/api/posts/${postId}/views`);
 };
+
+export const deletePost = (postId) => {
+    return axiosInstance.delete(`/api/posts/${postId}`);
+ };
