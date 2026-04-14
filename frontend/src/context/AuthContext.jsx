@@ -6,12 +6,9 @@ import { signOut } from "../api/authApi";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("accessToken"));
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [user, setUser] = useState(() => {
-        const nickname = localStorage.getItem("nickname");
-        return nickname ? { nickname } : null;
-    });
+    const [user, setUser] = useState(null);
 
     const logout = useCallback(async (options = { silent: false }) => {
         try {
@@ -21,10 +18,10 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error("Logout API error:", error);
         } finally {
-            setIsLoggedIn(false);
-            setUser(null);
             localStorage.removeItem("accessToken");
             localStorage.removeItem("nickname");
+            setIsLoggedIn(false);
+            setUser(null);
 
             if (!options.silent) {
                 if (options.message) alert(options.message);
@@ -42,23 +39,20 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        // 앱이 처음 로드될 때 로컬 스토리지 정보를 확인하거나 
-        // 서버에 세션 유효성 검사를 요청할 수 있는 지점입니다.
         const token = localStorage.getItem("accessToken");
+        const nickname = localStorage.getItem("nickname");
+
         if (token) {
-            // 여기에 나중에 세션 유효성 검사 로직을 넣을 예정입니다.
             setIsLoggedIn(true);
-        } else {
-            setIsLoggedIn(false);
+            if (nickname) setUser({ nickname });
         }
-        setIsLoading(false); // 확인이 끝나면 로딩 완료 처리
+        setIsLoading(false);
     }, []);
 
     useEffect(() => {
         const handleAuthLogout = (event) => {
-            const message = event.detail?.message;
-            logout({ silent: true, message });
-            window.location.href = "/signin";
+            const message = event.detail?.message || "세션이 만료되었습니다.";
+            logout({ silent: false, message });
         };
 
         window.addEventListener("auth:logout", handleAuthLogout);
