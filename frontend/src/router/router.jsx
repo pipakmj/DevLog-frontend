@@ -10,6 +10,7 @@ import ProjectForm from "../pages/ProjectForm";
 import PostList from "../pages/PostList";
 import PostWrite from "../pages/PostWrite";
 import PostDetail from "../pages/PostDetail";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 export const router = createBrowserRouter([
     {
@@ -30,7 +31,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/mypage",
-                element: <MyPage />
+                element: <ProtectedRoute><MyPage /></ProtectedRoute>
             },
             {
                 path: "/projectlist",
@@ -42,11 +43,11 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/project/add",
-                element: <ProjectForm />
+                element: <ProtectedRoute><ProjectForm /></ProtectedRoute>
             },
             {
                 path: "/project/edit/:projectId",
-                element: <ProjectForm />
+                element: <ProtectedRoute><ProjectForm /></ProtectedRoute>
             },
             {
                 path: "/posts",
@@ -54,11 +55,11 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/posts/write",
-                element: <PostWrite />
+                element: <ProtectedRoute><PostWrite /></ProtectedRoute>
             },
             {
                 path: "/posts/edit/:postId",
-                element: <PostWrite />
+                element: <ProtectedRoute><PostWrite /></ProtectedRoute>
             },
             {
                 path: "/posts/:postId",
