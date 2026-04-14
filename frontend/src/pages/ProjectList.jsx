@@ -27,7 +27,7 @@ function ProjectList() {
             const res = viewMode === "all"
                 ? await getAllProjects(pageNum, 9)
                 : await getProjects(pageNum, 9);
-            
+
             const newData = res.data.data;
             if (newData.length < size) {
                 setHasMore(false);
@@ -67,7 +67,7 @@ function ProjectList() {
                 <p>지금까지 진행한 프로젝트의 히스토리와 실시간 현황입니다.</p>
 
                 <div className='list-actions'>
-                    <button onClick={handleAddProject} className='add-project-btn' style={{cursor: 'pointer', border: 'none'}}>프로젝트 등록</button>
+                    <button onClick={handleAddProject} className='add-project-btn' style={{ cursor: 'pointer', border: 'none' }}>프로젝트 등록</button>
                 </div>
             </header>
 
@@ -90,45 +90,55 @@ function ProjectList() {
                 )}
             </div>
 
-            <div className='project-grid'>
-                {projects.map(project => (
-                    <article key={project.id} className='project-card'>
-                            <div className="card-image">
-                                <img src={project.thumbnail} alt={project.title} />
-                                <div className="card-overlay highlight">
-                                    <span>상세 보기</span>
-                                </div>
-                            </div>
-                        <div className='card-content'>
-                                <h3>{project.title}</h3>
-                                <p>{project.description}</p>
-                                <p>{project.demoUrl}</p>
-                                <p>{project.githubUrl}</p>
-                                <div className="card-tags">
-                                {project.techStack?.split(",").map(tag => (
-                                        <span key={tag} className="tag-badge">{tag}</span>
-                                    ))}
-                                </div>
-
-                                <Link to={`/project/${project.id}`} className="view-detail-btn">
-                                    자세히 알아보기
-                                </Link>
-
-                                <p>{project.created_at}</p>
-                            </div>
-                    </article>
-                ))}
-            </div>
-            {hasMore && (
-                <div className="load-more-container">
-                    <button
-                        onClick={handleLoadMore}
-                        className="load-more-btn"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? "Loading..." : "Load More Projects"}
-                    </button>
+            {projects.length === 0 ? (
+                <div className="no-projects-message">
+                    <p>등록된 프로젝트가 없습니다.</p>
+                    <p>당신의 멋진 프로젝트를 첫 번째로 등록해보세요!</p>
                 </div>
+            ) : (
+                <>
+                    <div className='project-grid'>
+                        {projects.map(project => (
+                            <article key={project.id} className='project-card'>
+                                <div className="card-image">
+                                    <img src={project.thumbnail} alt={project.title} />
+                                    <div className="card-overlay highlight">
+                                        <span>상세 보기</span>
+                                    </div>
+                                </div>
+                                <div className='card-content'>
+                                    <h3>{project.title}</h3>
+                                    <p>{project.description}</p>
+                                    <p>{project.demoUrl}</p>
+                                    <p>{project.githubUrl}</p>
+                                    <div className="card-tags">
+                                        {project.techStack?.split(",").map(tag => (
+                                            <span key={tag} className="tag-badge">{tag}</span>
+                                        ))}
+                                    </div>
+
+                                    <Link to={`/project/${project.id}`} className="view-detail-btn">
+                                        자세히 알아보기
+                                    </Link>
+
+                                    <p>{project.created_at}</p>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+
+                    {hasMore && (
+                        <div className="load-more-container">
+                            <button
+                                onClick={handleLoadMore}
+                                className="load-more-btn"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "Loading..." : "Load More Projects"}
+                            </button>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     )
