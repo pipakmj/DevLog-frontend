@@ -2,6 +2,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect, useCallback } from "react";
 import { signOut } from "../api/authApi";
+import { getMyInfo } from "../api/userApi";
 
 export const AuthContext = createContext();
 
@@ -39,15 +40,27 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem("accessToken");
-        const nickname = localStorage.getItem("nickname");
+        const validateSession = async () => { 
+            const token = localStorage.getItem("accessToken");
 
-        if (token) {
-            setIsLoggedIn(true);
-            if (nickname) setUser({ nickname });
-        }
-        setIsLoading(false);
-    }, []);
+            if (!token) {
+                setIsLoading(false);
+                return;
+            }
+            try {
+                const res = await getMyInfo();
+                setIsLoggedIn(true);
+                setUser({ nickname: res.data.data.nickname });
+            } catch (error) {
+                console.error("세션이 만료되었거나 올바르지 않습니다.", error);
+                logout({ silent: true });
+            } finally { 
+                setIsLoading(false);
+            }
+
+        };
+        validateSession();
+    }, [logout]);
 
     useEffect(() => {
         const handleAuthLogout = (event) => {
