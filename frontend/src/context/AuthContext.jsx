@@ -2,15 +2,14 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect, useCallback } from "react";
 import { signOut } from "../api/authApi";
+import { getMyInfo } from "../api/userApi";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("accessToken"));
-    const [user, setUser] = useState(() => {
-        const nickname = localStorage.getItem("nickname");
-        return nickname ? { nickname } : null;
-    });
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState(null);
 
     const logout = useCallback(async (options = { silent: false }) => {
         try {
@@ -20,10 +19,10 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error("Logout API error:", error);
         } finally {
-            setIsLoggedIn(false);
-            setUser(null);
             localStorage.removeItem("accessToken");
             localStorage.removeItem("nickname");
+            setIsLoggedIn(false);
+            setUser(null);
 
             if (!options.silent) {
                 if (options.message) alert(options.message);
@@ -41,10 +40,32 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
+        const validateSession = async () => { 
+            const token = localStorage.getItem("accessToken");
+
+            if (!token) {
+                setIsLoading(false);
+                return;
+            }
+            try {
+                const res = await getMyInfo();
+                setIsLoggedIn(true);
+                setUser({ nickname: res.data.data.nickname });
+            } catch (error) {
+                console.error("세션이 만료되었거나 올바르지 않습니다.", error);
+                logout({ silent: true });
+            } finally { 
+                setIsLoading(false);
+            }
+
+        };
+        validateSession();
+    }, [logout]);
+
+    useEffect(() => {
         const handleAuthLogout = (event) => {
-            const message = event.detail?.message;
-            logout({ silent: true, message });
-            window.location.href = "/signin";
+            const message = event.detail?.message || "세션이 만료되었습니다.";
+            logout({ silent: false, message });
         };
 
         window.addEventListener("auth:logout", handleAuthLogout);
@@ -52,7 +73,7 @@ export const AuthProvider = ({ children }) => {
     }, [logout]);
 
     return (
-        <AuthContext.Provider value={{ user, login, isLoggedIn, logout }}>
+        <AuthContext.Provider value={{ user, login, isLoggedIn, logout, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

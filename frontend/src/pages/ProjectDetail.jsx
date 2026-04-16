@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { getProjects, deleteProject, getAllProjects } from '../api/projectApi';
+import { getProjects, deleteProject, getAllProjects, getDetailProject } from '../api/projectApi';
 import { getRepoCommits, parseGithubUrl } from '../api/githubApi';
 import { AuthContext } from "../context/AuthContext"
 import '../styles/ProjectDetail.css';
@@ -15,14 +15,14 @@ function ProjectDetail() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchAllData = async () => {
+        const fetchDetailData = async () => {
             try {
-                const res = await getAllProjects();
-                const target = res.data.data.find(p => p.id === parseInt(projectId));
-                setProject(target);
+                const res = await getDetailProject(projectId);
+                const currentData = res.data.data;
+                setProject(currentData);
 
-                if (target && target.githubUrl) {
-                    const parsed = parseGithubUrl(target.githubUrl);
+                if (currentData && currentData.githubUrl) {
+                    const parsed = parseGithubUrl(currentData.githubUrl);
                     if (parsed) {
                         const commitData = await getRepoCommits(parsed.owner, parsed.repo);
                         setCommits(commitData);
@@ -34,7 +34,7 @@ function ProjectDetail() {
                 setIsLoading(false);
             }
         };
-        fetchAllData();
+        fetchDetailData();
     }, [projectId]);
 
     const handleDelete = async () => {
