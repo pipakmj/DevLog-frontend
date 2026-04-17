@@ -23,18 +23,15 @@ function ProjectList() {
     const fetchProjects = async (pageNum, isReset = false) => {
         setIsLoading(true);
         try {
-            const size = 9;
             const res = viewMode === "all"
                 ? await getAllProjects(pageNum, 9)
                 : await getProjects(pageNum, 9);
 
-            const newData = res.data.data;
-            if (newData.length < size) {
-                setHasMore(false);
-            }
-            else {
-                setHasMore(true);
-            }
+            const data = res.data.data;
+            const newData = data.content;
+            const hasNext = !data.last;
+
+            setHasMore(hasNext);
 
             setProjects(prev => isReset ? newData : [...prev, ...newData]);
         } catch (error) {
@@ -58,7 +55,7 @@ function ProjectList() {
         }
     };
 
-    if (isLoading) return <div className='list-loading'>프로젝트 로딩중..</div>;
+    if (isLoading && projects.length === 0) return <div className='list-loading'>프로젝트 로딩중..</div>;
 
     return (
         <div className='project-list-container'>

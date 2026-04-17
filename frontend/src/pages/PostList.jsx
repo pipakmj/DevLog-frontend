@@ -3,9 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getAllPosts } from '../api/postApi';
 import { formatDate } from '../utils/formatDate';
 import '../styles/PostList.css';
+import Pagination from '../components/Pagination';
 
 function PostList() {
     const [posts, setPosts] = useState([]);
+    const [pageInfo, setPageInfo] = useState({ number: 0, totalPages: 0 });
+    const [currentPage, setCurrentPage] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
@@ -13,8 +16,16 @@ function PostList() {
         const fetchPosts = async () => {
             setIsLoading(true);
             try {
-                const res = await getAllPosts();
-                setPosts(res.data.data);
+                const res = await getAllPosts(currentPage, 10);
+                const data = res.data.data;
+
+                setPosts(data.content);
+
+                setPageInfo({
+                    number: data.number,
+                    totalPages: data.totalPages,
+                    totalElements: data.totalElements,
+                })
             } catch (error) {
                 console.log("게시글 목록을 가져오지 못했습니다.", error);
             } finally { 
@@ -22,7 +33,12 @@ function PostList() {
             }
         };
         fetchPosts();
-    }, []);
+    }, [currentPage]);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        window.scrollTo(0, 0);
+    };
 
     return (
         <div className="post-list-container">
@@ -52,6 +68,9 @@ function PostList() {
                     </article>
                 ))}
             </div>
+            <Pagination
+                pageInfo={pageInfo} onPageChange={handlePageChange}
+            />
         </div>
     );
 }
