@@ -50,6 +50,114 @@
     color: #e2e8f0;
 }
 
+/* PostDetail.css 에 추가 */
+
+.comment-section {
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.comment-section h3 {
+    font-size: 1.4rem;
+    margin-bottom: 24px;
+    color: #f1f5f9;
+}
+
+/* 댓글 폼 */
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.comment-form textarea {
+    width: 100%;
+    min-height: 100px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    color: #f1f5f9;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s;
+}
+
+.comment-form textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.comment-form button {
+    align-self: flex-end;
+    background: var(--primary);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.comment-form button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #475569;
+}
+
+/* 댓글 리스트 */
+.comment-item {
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.comment-item.reply {
+    margin-left: 40px;
+    /* 대댓글 들여쓰기 */
+    padding-left: 20px;
+    border-left: 2px solid var(--primary);
+}
+
+.comment-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.comment-author {
+    font-weight: 700;
+    color: #f1f5f9;
+    font-size: 0.95rem;
+}
+
+.author-badge {
+    margin-left: 6px;
+    padding: 2px 8px;
+    background: rgba(99, 102, 241, 0.15);
+    /* 팀 테마 색상(primary) 활용 */
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.comment-date {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.comment-content {
+    line-height: 1.6;
+    color: #cbd5e1;
+    white-space: pre-wrap;
+    /* 줄바꿈 유지 */
+}
+
 .like-section {
     display: flex;
     justify-content: center;

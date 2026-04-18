@@ -5,6 +5,7 @@ import MDEditor from '@uiw/react-md-editor';
 import { AuthContext } from '../context/AuthContext';
 import { formatDate } from '../utils/formatDate';
 import '../styles/PostDetail.css';
+import { createComment, getComments, updateComment } from '../api/commentApi';
 
 function PostDetail() {
 
@@ -15,6 +16,17 @@ function PostDetail() {
     const [isLoading, setIsLoading] = useState(true);
     const [likes, setLikes] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
+    const [comments, setComments] = useState([]);
+    const [commentInput, setCommentInput] = useState("");
+
+    const fetchComments = async () => {
+        try {
+            const res = await getComments(postId);
+            setComments(res.data.data);
+        } catch (error) {
+            console.error("댓글 로드 실패", error);
+        }
+    };
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -32,7 +44,9 @@ function PostDetail() {
                 setIsLoading(false);
             }
         };
+
         fetchPost();
+        fetchComments();
     }, [postId]);
     
     const handleLike = async() => { 
@@ -63,6 +77,24 @@ function PostDetail() {
             }
         }
     }
+
+    const handleCommentSubmit = async (e) => { 
+        e.preventDefault();
+        if (!isLoggedIn) { 
+            alert("로그인이 필요합니다.");
+            return;
+        }
+        if (!commentInput?.trim()) return;
+
+        try {
+            await createComment(postId, commentInput);
+            setCommentInput("");
+            fetchComments();
+            alert("댓글이 등록되었습니다.");
+        } catch (error) {
+            console.error("댓글 작성성 실패", error);
+        }
+    };
 
     if (isLoading) return <div className="loading">글을 불러오는 중...</div>;
     if (!post) return <div className="error">게시글을 찾을 수 없습니다.</div>;
@@ -103,6 +135,33 @@ function PostDetail() {
                         <button onClick={handleDelete} className="delete-btn">삭제</button>
                     </div>
                 )}
+            </div>
+            <div className="comment-section">
+                <h3>댓글 {comments.length}개</h3>
+
+                <form className="comment-form" onSubmit={handleCommentSubmit}>
+                    <textarea
+                        placeholder={isLoggedIn ? "따뜻한 댓글을 남겨주세요." : "로그인 후 댓글을 남길 수 있습니다."}
+                        value={commentInput}
+                        onChange={(e) => setCommentInput(e.target.value)}
+                        disabled={!isLoggedIn}
+                    />
+                    <button type="submit" disabled={!isLoggedIn || !commentInput?.trim()}>등록</button>
+                </form>
+                <div className="comment-list">
+                    {comments.map(c => (
+                        <div key={c.id} className={`comment-item ${c.parentId ? 'reply' : ''}`}>
+                            <div className="comment-meta">
+                                <span className="comment-author">
+                                    {c.nickname}
+                                    {c.nickname === post.author &&  <span className='author-badge'>작성자</span>}
+                                </span>
+                                <span className="comment-date">{formatDate(c.createdAt)}</span>
+                            </div>
+                            <p className="comment-content">{c.content}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
             <footer className="post-detail-footer">
                 <button onClick={() => navigate('/posts')} className="list-btn">목록으로</button>
