@@ -1,0 +1,186 @@
+.post-detail-container {
+    max-width: 850px;
+    margin: 120px auto 80px;
+}
+
+.post-detail-header h1 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 24px 0;
+}
+
+/* 정보 영역 개선 */
+.post-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 30px 0;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+.post-info .author {
+    color: #f1f5f9;
+    font-weight: 600;
+}
+
+/* 조회수 뱃지 */
+.post-info .post-views {
+    background: rgba(59, 130, 246, 0.1);
+    color: #60a5fa;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-left: auto; /* 조회수는 오른쪽 끝으로 밀어넣기 */
+}
+
+.post-info .divider {
+    color: rgba(255, 255, 255, 0.1);
+    font-size: 0.8rem;
+}
+
+.post-content {
+    background: transparent;
+    padding: 20px 0;
+    line-height: 1.8;
+    color: #e2e8f0;
+}
+
+.like-section {
+    display: flex;
+    justify-content: center;
+    padding: 60px 0 30px;
+    /* 위쪽 여백을 더 주어 본문과 구분 */
+    /* border-bottom 제거 (선택) */
+}
+
+.like-btn {
+    display: flex;
+    flex-direction: row;
+    /* 가로 배열로 변경하여 더 깔끔하게 */
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.like-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-3px);
+    border-color: #ff4757;
+    box-shadow: 0 10px 20px rgba(255, 71, 87, 0.1);
+}
+
+.like-btn.active {
+    background: rgba(255, 71, 87, 0.1);
+    border-color: #ff4757;
+}
+
+.like-btn.active .heart {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 5px #ff4757);
+}
+
+.like-btn .heart {
+    font-size: 1.4rem;
+    transition: transform 0.3s ease;
+}
+
+.like-btn .count {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+/* 관리 버튼 영역 */
+.admin-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.edit-btn, .delete-btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    color: #94a3b8;
+    transition: all 0.3s;
+}
+
+.edit-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+}
+
+.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* 마크다운 스타일 커스텀 */
+.wmde-markdown {
+    background: transparent !important;
+    font-size: 1.1rem !important;
+    color: #e2e8f0 !important;
+}
+
+.post-detail-footer {
+    margin-top: 80px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: center;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.edit-btn,
+.delete-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+    transition: all 0.3s;
+}
+
+.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    /* 연한 레드 배경 */
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+.list-btn {
+    padding: 12px 30px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.list-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+}

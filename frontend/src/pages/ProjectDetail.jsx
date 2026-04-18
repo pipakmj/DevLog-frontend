@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { getProjects, deleteProject } from '../api/projectApi';
+import { getProjects, deleteProject, getAllProjects, getDetailProject } from '../api/projectApi';
 import { getRepoCommits, parseGithubUrl } from '../api/githubApi';
+import { AuthContext } from "../context/AuthContext"
 import '../styles/ProjectDetail.css';
 
 function ProjectDetail() {
@@ -9,18 +10,19 @@ function ProjectDetail() {
     const [project, setProject] = useState(null);
     const [commits, setCommits] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { isLoggedIn, user } = useContext(AuthContext);
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchAllData = async () => {
+        const fetchDetailData = async () => {
             try {
-                const res = await getProjects();
-                const target = res.data.data.find(p => p.id === parseInt(projectId));
-                setProject(target);
+                const res = await getDetailProject(projectId);
+                const currentData = res.data.data;
+                setProject(currentData);
 
-                if (target && target.githubUrl) {
-                    const parsed = parseGithubUrl(target.githubUrl);
+                if (currentData && currentData.githubUrl) {
+                    const parsed = parseGithubUrl(currentData.githubUrl);
                     if (parsed) {
                         const commitData = await getRepoCommits(parsed.owner, parsed.repo);
                         setCommits(commitData);
@@ -32,7 +34,7 @@ function ProjectDetail() {
                 setIsLoading(false);
             }
         };
-        fetchAllData();
+        fetchDetailData();
     }, [projectId]);
 
     const handleDelete = async () => {
@@ -99,10 +101,10 @@ function ProjectDetail() {
                 </div>
             </section>
 
-            <div className="admin-actions">
+            {isLoggedIn && user?.id === project?.user_id && (<div className="admin-actions">
                 <Link to={`/project/edit/${project.id}`} className="link-btn edit">Edit</Link>
                 <button onClick={handleDelete} className="link-btn delete">Delete</button>
-            </div>
+            </div>)}
 
         </div>
     )

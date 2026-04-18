@@ -1,7 +1,15 @@
 import axiosInstance from "./axiosInstance";
 
-export const getProjects = () => {
-    return axiosInstance.get("/api/project/mine");
+export const getAllProjects = (page = 0, size = 9) => {
+    return axiosInstance.get(`/api/project/all?page=${page}&size=${size}`)
+};
+
+export const getProjects = (page = 0, size = 9) => {
+    return axiosInstance.get(`/api/project/mine?page=${page}&size=${size}`);
+};
+
+export const getDetailProject = (porjectId) => { 
+    return axiosInstance.get(`/api/project/${porjectId}`);
 };
 
 export const createProject = (userProject) => {

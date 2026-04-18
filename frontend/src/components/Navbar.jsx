@@ -10,6 +10,7 @@ export default function Navbar() {
             <div className="nav-links">
                 <Link to="/#features">Features</Link>
                 <Link to="/projectlist">Projects</Link>
+                <Link to="/posts">Posts</Link>
                 {isLoggedIn && user ? (
                     <div className="user-nav-group">
                         <Link to="/mypage" className="user-nickname">{user?.nickname}님</Link>

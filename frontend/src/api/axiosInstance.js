@@ -4,6 +4,7 @@ const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 const axiosInstance = axios.create({
     baseURL: baseURL,
+    timeout: 10000,
     withCredentials: true
 })
 
@@ -25,9 +26,18 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
+        if (error.code === "ECONNABORTED" && error.message.includes("timeout")) {
+            alert("서버응답이 너무 느립니다. 잠시 후 다시 시도해주세요.");
+            return Promise.reject(new Error("Request Timeout"));
+        }
+
         const originalRequest = error.config;
 
         if (error.response?.status === 401 && !originalRequest._retry) {
+            if (originalRequest._silent) {
+                return Promise.reject(error);
+            }
+
             originalRequest._retry = true;
             try {
                 const res = await axios.post(`${baseURL}/auth/refresh`, {}, { withCredentials: true });

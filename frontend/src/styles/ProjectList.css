@@ -194,6 +194,128 @@
     background: #0a0a0a;
 }
 
+/* 🏁 프로젝트 탭 (세그먼트 컨트롤 스타일) */
+.project-tabs {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0 50px;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.project-tabs>div {
+    display: flex;
+    background: rgba(255, 255, 255, 0.03);
+    /* 아주 연한 유리 느낌 배경 */
+    padding: 5px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    backdrop-filter: blur(10px);
+}
+
+.project-tabs button {
+    padding: 10px 24px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    /* 비활성 상태: 흐릿한 회색 */
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 활성화(Active) 상태: 화이트 & 네온 블루 포인트 */
+.project-tabs button.active {
+    background: rgba(59, 130, 246, 0.1);
+    /* 은은한 블루 배경 */
+    color: #3b82f6;
+    /* 명확한 블루 포인트 */
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+}
+
+/* 마우스 올렸을 때 살짝 밝아지는 효과 */
+.project-tabs button:hover:not(.active) {
+    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* 탭 전환 시 애니메이션 효과를 위한 추가 스타일 */
+.project-tabs button.active::after {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 4px;
+    background: #3b82f6;
+    border-radius: 50%;
+    margin: 2px auto 0;
+    box-shadow: 0 0 8px #3b82f6;
+}
+
+/* -------------------------------------------------- */
+
+/* 리스트 상단 액션 영역 (등록 버튼 위치 정렬) */
+.list-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.add-project-btn {
+    padding: 12px 28px;
+    background: #3b82f6;
+    /* 메인 테마 컬러 */
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+    cursor: pointer;
+    border: none;
+}
+
+.add-project-btn:hover {
+    transform: translateY(-3px);
+    background: #60a5fa;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+}
+
+.load-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 60px;
+    padding-bottom: 40px;
+}
+
+.load-more-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    padding: 12px 40px;
+    border-radius: 100px;
+    /* 둥근 캡슐 형태 */
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.load-more-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.05);
+    color: #f1f5f9;
+    border-color: #3b82f6;
+    /* 네온 블루 포인트 */
+    transform: scale(1.05);
+}
+
+.load-more-btn:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
 /* 애니메이션 */
 @keyframes fadeInDown {
     from {
@@ -215,5 +337,40 @@
 
     .list-header h1 {
         font-size: 2.2rem;
+    }
+}
+
+/* 프로젝트 없음 메시지 스타일 */
+.no-projects-message {
+    text-align: center;
+    padding: 80px 40px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    margin: 40px 0;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.no-projects-message p:first-child {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 12px;
+}
+
+.no-projects-message p:last-child {
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
