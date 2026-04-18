@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { deletePost, getPostDetail, updatePostViewCount } from '../api/postApi';
+import { deletePost, getLikeStatus, getPostDetail, toggleLike, updatePostViewCount } from '../api/postApi';
 import MDEditor from '@uiw/react-md-editor';
 import { AuthContext } from '../context/AuthContext';
 import { formatDate } from '../utils/formatDate';
@@ -13,13 +13,19 @@ function PostDetail() {
     const navigate = useNavigate();
     const [post, setPost] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [likes, setLikes] = useState(0);
+    const [isLiked, setIsLiked] = useState(false);
+
     useEffect(() => {
         const fetchPost = async () => {
             try {
                 await updatePostViewCount(postId);
-
-                const res = await getPostDetail(postId);
-                setPost(res.data.data);
+                const postResponse = await getPostDetail(postId);
+                const likeResponse = await getLikeStatus(postId);
+                
+                setPost(postResponse.data.data);
+                setIsLiked(likeResponse.data.data.isLiked);
+                setLikes(likeResponse.data.data.likeCount);
             } catch (error) {
                 console.error("게시글 로드 실패", error);
             } finally {
@@ -28,6 +34,22 @@ function PostDetail() {
         };
         fetchPost();
     }, [postId]);
+    
+    const handleLike = async() => { 
+        if (!isLoggedIn) {
+            alert("좋아요를 누르시려면 로그인이 필요합니다.");
+            navigate("/signin", { state: { from: `/posts/${postId}` } });
+            return;
+        }
+
+        try {
+            const res = await toggleLike(postId);
+            setLikes(res.data.data?.likeCount);
+            setIsLiked(res.data.data?.isLiked);
+        } catch (error) {
+            console.error("좋아요 처리 실패", error);
+        }
+    };
 
     const handleDelete = async () => {
         if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
@@ -67,6 +89,14 @@ function PostDetail() {
             </header>
             <div className="post-content">
                 <MDEditor.Markdown source={post.content} />
+
+                <div className="like-section">
+                    <button className={`like-btn ${isLiked ? 'active' : ''}`} onClick={handleLike}>
+                        <span className="heart">{isLiked ? '❤️' : '🤍'}</span>
+                        <span className="count">{likes}</span>
+                    </button>
+                </div>
+
                 {isLoggedIn && user?.nickname === post?.author && (
                     <div className="admin-actions">
                         <button onClick={() => navigate(`/posts/edit/${postId}`)} className="edit-btn">수정</button>

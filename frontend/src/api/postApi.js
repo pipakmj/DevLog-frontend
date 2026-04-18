@@ -22,4 +22,13 @@ export const updatePostViewCount = (postId) => {
 
 export const deletePost = (postId) => {
     return axiosInstance.delete(`/api/posts/${postId}`);
- };
+};
+ 
+
+export const toggleLike = (postId) => {
+    return axiosInstance.post(`/api/posts/${postId}/like`)
+};
+
+export const getLikeStatus = (postId) => {
+    return axiosInstance.get(`/api/posts/${postId}/like/status`)
+};
