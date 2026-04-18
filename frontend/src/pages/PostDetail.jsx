@@ -18,6 +18,8 @@ function PostDetail() {
     const [isLiked, setIsLiked] = useState(false);
     const [comments, setComments] = useState([]);
     const [commentInput, setCommentInput] = useState("");
+    const [replyToId, setReplyToId] = useState(null);
+    const [replyInput, setReplyInput] = useState("");
 
     const fetchComments = async () => {
         try {
@@ -96,6 +98,34 @@ function PostDetail() {
         }
     };
 
+    const handleReplySubmit = async (e, parentId) => { 
+        e.preventDefault();
+        if (!replyInput?.trim()) return;
+
+        try {
+            await createComment(postId, replyInput, parentId);
+            setReplyInput("");
+            setReplyToId(null);
+            fetchComments();
+            alert("답글을 등록했습니다.");
+        } catch (error) {
+            console.error("답글 작성 실패", error);
+        }
+    };
+
+    const formatComments = (allComments) => {
+        const parentComments = allComments.filter(c => !c.parentId); // 부모들만 추출
+        const replyComments = allComments.filter(c => c.parentId);  // 대댓글들만 추출
+        const result = [];
+        parentComments.forEach(parent => {
+            result.push(parent); // 부모 넣고
+            // 해당 부모를 부모로 가진 대댓글들만 찾아서 바로 뒤에 넣기
+            const childReplies = replyComments.filter(reply => reply.parentId === parent.commentId);
+            result.push(...childReplies);
+        });
+        return result;
+    };
+
     if (isLoading) return <div className="loading">글을 불러오는 중...</div>;
     if (!post) return <div className="error">게시글을 찾을 수 없습니다.</div>;
     return (
@@ -149,16 +179,33 @@ function PostDetail() {
                     <button type="submit" disabled={!isLoggedIn || !commentInput?.trim()}>등록</button>
                 </form>
                 <div className="comment-list">
-                    {comments.map(c => (
-                        <div key={c.id} className={`comment-item ${c.parentId ? 'reply' : ''}`}>
+                    {formatComments(comments).map(c => (
+                        <div key={c.commentId} className={`comment-item ${c.parentId ? 'reply' : ''}`}>
                             <div className="comment-meta">
                                 <span className="comment-author">
                                     {c.nickname}
-                                    {c.nickname === post.author &&  <span className='author-badge'>작성자</span>}
+                                    {c.nickname === post.author && <span className='author-badge'>작성자</span>}
                                 </span>
                                 <span className="comment-date">{formatDate(c.createdAt)}</span>
                             </div>
                             <p className="comment-content">{c.content}</p>
+
+                            {!c.parentId && isLoggedIn && (
+                                <button className="reply-toggle-btn" onClick={() => setReplyToId(replyToId === c.commentId ? null : c.commentId)}>
+                                    {replyToId === c.commentId ? "취소" : "답글"}
+                                </button>
+                            )}
+                            {replyToId === c.commentId && (
+                                <form className="reply-form" onSubmit={(e) => handleReplySubmit(e, c.commentId)}>
+                                    <textarea
+                                        placeholder="답글을 입력하세요..."
+                                        value={replyInput}
+                                        onChange={(e) => setReplyInput(e.target.value)}
+                                        autoFocus
+                                    />
+                                    <button type="submit" disabled={!replyInput.trim()}>답글 등록</button>
+                                </form>
+                            )}
                         </div>
                     ))}
                 </div>
