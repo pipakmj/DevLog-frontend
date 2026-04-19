@@ -96,7 +96,7 @@ function PostDetail() {
             fetchComments();
             alert("댓글이 등록되었습니다.");
         } catch (error) {
-            console.error("댓글 작성성 실패", error);
+            console.error("댓글 작성 실패", error);
         }
     };
 
