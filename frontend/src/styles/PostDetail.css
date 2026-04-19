@@ -35,7 +35,8 @@
     border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 700;
-    margin-left: auto; /* 조회수는 오른쪽 끝으로 밀어넣기 */
+    margin-left: auto;
+    /* 조회수는 오른쪽 끝으로 밀어넣기 */
 }
 
 .post-info .divider {
@@ -151,6 +152,16 @@
     color: #94a3b8;
 }
 
+.comment-item.deleted {
+    opacity: 0.6;
+}
+
+.deleted-message {
+    font-style: italic;
+    color: #64748b;
+    /* 조금 더 흐린 색상 */
+}
+
 .comment-content {
     line-height: 1.6;
     color: #cbd5e1;
@@ -248,7 +259,8 @@
     margin-top: 30px;
 }
 
-.edit-btn, .delete-btn {
+.edit-btn,
+.delete-btn {
     padding: 8px 16px;
     border-radius: 10px;
     font-size: 0.9rem;
@@ -324,4 +336,21 @@
 .list-btn:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #f1f5f9;
+}
+
+.comment-delete-btn {
+    background: transparent;
+    color: #ef4444;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    margin-left: 8px;
+    border-radius: 4px;
+}
+
+.comment-delete-btn:hover {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.1);
 }

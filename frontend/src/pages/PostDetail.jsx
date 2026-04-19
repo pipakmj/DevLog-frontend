@@ -5,7 +5,7 @@ import MDEditor from '@uiw/react-md-editor';
 import { AuthContext } from '../context/AuthContext';
 import { formatDate } from '../utils/formatDate';
 import '../styles/PostDetail.css';
-import { createComment, getComments, updateComment } from '../api/commentApi';
+import { createComment, deleteComment, getComments, updateComment } from '../api/commentApi';
 
 function PostDetail() {
 
@@ -36,7 +36,7 @@ function PostDetail() {
                 await updatePostViewCount(postId);
                 const postResponse = await getPostDetail(postId);
                 const likeResponse = await getLikeStatus(postId);
-                
+
                 setPost(postResponse.data.data);
                 setIsLiked(likeResponse.data.data.isLiked);
                 setLikes(likeResponse.data.data.likeCount);
@@ -50,8 +50,8 @@ function PostDetail() {
         fetchPost();
         fetchComments();
     }, [postId]);
-    
-    const handleLike = async() => { 
+
+    const handleLike = async () => {
         if (!isLoggedIn) {
             alert("좋아요를 누르시려면 로그인이 필요합니다.");
             navigate("/signin", { state: { from: `/posts/${postId}` } });
@@ -80,9 +80,9 @@ function PostDetail() {
         }
     }
 
-    const handleCommentSubmit = async (e) => { 
+    const handleCommentSubmit = async (e) => {
         e.preventDefault();
-        if (!isLoggedIn) { 
+        if (!isLoggedIn) {
             alert("로그인이 필요합니다.");
             return;
         }
@@ -98,7 +98,20 @@ function PostDetail() {
         }
     };
 
-    const handleReplySubmit = async (e, parentId) => { 
+    const handleCommentDelete = async (commentId) => {
+        if (window.confirm("댓글을 삭제하시겠습니까?")) {
+            try {
+                await deleteComment(commentId);
+                fetchComments();
+                alert("댓글이 삭제되었습니다.");
+            } catch (error) {
+                console.error("댓글 삭제 실패", error);
+                alert("삭제 권한이 없습니다.");
+            }
+        }
+    };
+
+    const handleReplySubmit = async (e, parentId) => {
         e.preventDefault();
         if (!replyInput?.trim()) return;
 
@@ -188,12 +201,20 @@ function PostDetail() {
                                 </span>
                                 <span className="comment-date">{formatDate(c.createdAt)}</span>
                             </div>
-                            <p className="comment-content">{c.content}</p>
-
-                            {!c.parentId && isLoggedIn && (
-                                <button className="reply-toggle-btn" onClick={() => setReplyToId(replyToId === c.commentId ? null : c.commentId)}>
-                                    {replyToId === c.commentId ? "취소" : "답글"}
-                                </button>
+                            {c.isDeleted ? (<p className='comment-content deleted-message'>삭제된 댓글입니다.</p>
+                            ) : (
+                                    <>
+                                        <p className='comment-content'>{c.content}</p>
+                                        {!c.parentId && isLoggedIn &&
+                                            (<button className="reply-toggle-btn" onClick={() => setReplyToId(replyToId === c.commentId ? null : c.commentId)}>
+                                            {replyToId === c.commentId ? "취소" : "답글"}
+                                            </button>)}
+                                        {isLoggedIn && user?.nickname === c.nickname && (
+                                            <button className="comment-delete-btn" onClick={() => handleCommentDelete(c.commentId)}>
+                                                삭제
+                                            </button>
+                                        )}
+                                    </>
                             )}
                             {replyToId === c.commentId && (
                                 <form className="reply-form" onSubmit={(e) => handleReplySubmit(e, c.commentId)}>
