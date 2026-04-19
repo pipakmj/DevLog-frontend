@@ -33,7 +33,10 @@ axiosInstance.interceptors.response.use(
 
         const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // 로그인이나 회원가입 시 발생하는 401 에러는 리프레시 로직을 타지 않음
+        const isAuthRequest = originalRequest.url.includes("/auth/signin") || originalRequest.url.includes("/auth/signup");
+
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthRequest) {
             if (originalRequest._silent) {
                 return Promise.reject(error);
             }
