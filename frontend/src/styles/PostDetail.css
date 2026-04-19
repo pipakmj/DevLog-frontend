@@ -152,6 +152,12 @@
     color: #94a3b8;
 }
 
+.comment-updated-date {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-style: italic;
+}
+
 .comment-item.deleted {
     opacity: 0.6;
 }
@@ -160,6 +166,65 @@
     font-style: italic;
     color: #64748b;
     /* 조금 더 흐린 색상 */
+}
+
+.comment-edit-btn {
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    cursor: pointer;
+    margin-left: 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.comment-edit-btn:hover {
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+/* 인라인 수정 폼 영역 */
+.edit-form {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.edit-form textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--primary);
+    /* 수정 중임을 알리기 위해 강조 */
+    border-radius: 8px;
+    padding: 12px;
+    color: #f1f5f9;
+    font-size: 0.95rem;
+    min-height: 80px;
+}
+
+.edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.edit-actions button {
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.edit-actions button:first-child {
+    background: var(--primary);
+    color: white;
+}
+
+.edit-actions button:last-child {
+    background: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
 }
 
 .comment-content {
@@ -353,4 +418,57 @@
 .comment-delete-btn:hover {
     opacity: 1;
     background: rgba(239, 68, 68, 0.1);
+}
+
+.comment-updated-date {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-style: italic;
+    margin-left: 8px;
+}
+
+.comment-edit-btn {
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    cursor: pointer;
+    margin-left: 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.comment-edit-btn:hover {
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.edit-form {
+    margin: 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.edit-actions button {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.edit-actions button:first-child {
+    background: var(--primary);
+    color: white;
+}
+
+.edit-actions button:last-child {
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
 }

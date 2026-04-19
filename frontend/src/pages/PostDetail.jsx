@@ -20,6 +20,8 @@ function PostDetail() {
     const [commentInput, setCommentInput] = useState("");
     const [replyToId, setReplyToId] = useState(null);
     const [replyInput, setReplyInput] = useState("");
+    const [editingId, setEditingId] = useState(null);
+    const [editInput, setEditInput] = useState("");
 
     const fetchComments = async () => {
         try {
@@ -95,6 +97,21 @@ function PostDetail() {
             alert("댓글이 등록되었습니다.");
         } catch (error) {
             console.error("댓글 작성성 실패", error);
+        }
+    };
+
+    const handleEditClick = (comment) => {
+        setEditingId(comment.commentId);
+        setEditInput(comment.content);
+    };
+    
+    const handleEditSubmit = async (commentId) => { 
+        try {
+            await updateComment(commentId, editInput);
+            setEditingId(null);
+            fetchComments();
+        } catch (error) {
+            console.error("수정 실패", error);
         }
     };
 
@@ -199,22 +216,47 @@ function PostDetail() {
                                     {c.nickname}
                                     {c.nickname === post.author && <span className='author-badge'>작성자</span>}
                                 </span>
-                                <span className="comment-date">{formatDate(c.createdAt)}</span>
+                                {c.updatedAt === null ? (
+                                    <span className="comment-date">{formatDate(c.createdAt)}</span>
+                                ) : (
+                                    <span className='comment-updated-date'>{formatDate(c.updatedAt)} 수정됨</span>
+                                )}
                             </div>
                             {c.isDeleted ? (<p className='comment-content deleted-message'>삭제된 댓글입니다.</p>
                             ) : (
-                                    <>
-                                        <p className='comment-content'>{c.content}</p>
-                                        {!c.parentId && isLoggedIn &&
-                                            (<button className="reply-toggle-btn" onClick={() => setReplyToId(replyToId === c.commentId ? null : c.commentId)}>
-                                            {replyToId === c.commentId ? "취소" : "답글"}
-                                            </button>)}
-                                        {isLoggedIn && user?.nickname === c.nickname && (
-                                            <button className="comment-delete-btn" onClick={() => handleCommentDelete(c.commentId)}>
-                                                삭제
-                                            </button>
-                                        )}
-                                    </>
+                                <>
+                                    {editingId === c.commentId ? (
+                                            <div className="edit-form">
+                                                <textarea
+                                                    value={editInput}
+                                                    onChange={(e) => setEditInput(e.target.value)}
+                                                    autoFocus
+                                                />
+                                                <div className="edit-actions">
+                                                    <button onClick={() => handleEditSubmit(c.commentId)}>저장</button>
+                                                    <button onClick={() => setEditingId(null)}>취소</button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <p className = 'comment-content'>{c.content}</p>
+                                                {!c.parentId && isLoggedIn &&
+                                                    (<button className="reply-toggle-btn" onClick={() => setReplyToId(replyToId === c.commentId ? null : c.commentId)}>
+                                                        {replyToId === c.commentId ? "취소" : "답글"}
+                                                    </button>)}
+                                                {isLoggedIn && user?.nickname === c.nickname && (
+                                                    <>
+                                                        <button className="comment-delete-btn" onClick={() => handleCommentDelete(c.commentId)}>
+                                                            삭제
+                                                        </button>
+                                                        <button className="comment-edit-btn" onClick={() => handleEditClick(c)}>
+                                                            수정
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </>
+                                    )}
+                                </>
                             )}
                             {replyToId === c.commentId && (
                                 <form className="reply-form" onSubmit={(e) => handleReplySubmit(e, c.commentId)}>
