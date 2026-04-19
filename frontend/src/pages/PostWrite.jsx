@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
-import { getProjects } from '../api/projectApi';
+import { getProjectsToPost } from '../api/projectApi';
 import { createPost, getPostDetail, updatePost } from '../api/postApi';
 import '../styles/PostWrite.css';
 
@@ -18,7 +18,7 @@ function PostWrite() {
     const [myProjects, setMyProjects] = useState([]);
 
     useEffect(() => {
-        getProjects().then(res => {
+        getProjectsToPost().then(res => {
             setMyProjects(res.data.data);
         }).catch(err => console.error("프로젝트 로드 실패", err));
 

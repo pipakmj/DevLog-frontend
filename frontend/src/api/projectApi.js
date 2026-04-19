@@ -8,6 +8,10 @@ export const getProjects = (page = 0, size = 9) => {
     return axiosInstance.get(`/api/project/mine?page=${page}&size=${size}`);
 };
 
+export const getProjectsToPost = () => {
+    return axiosInstance.get(`/api/project/mine/post`);
+};
+
 export const getDetailProject = (porjectId) => { 
     return axiosInstance.get(`/api/project/${porjectId}`);
 };
