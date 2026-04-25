@@ -1,6 +1,6 @@
-export const getRepoCommits = async (owner, repo) => {
+export const getRepoCommits = async (owner, repo, page = 1) => {
     try {
-        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?per_page=10`);
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?page=${page}&per_page=10`);
         if (!res.ok) throw new Error("GIT HUB 데이터를 불러오지 못했습니다.");
         const data = await res.json();
         return data;
