@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { createProject, updateProject, getProjects } from '../api/projectApi';
+import { createProject, updateProject, getProjects, getDetailProject } from '../api/projectApi';
 
 function ProjectForm() {
     const { projectId } = useParams();
@@ -18,12 +18,10 @@ function ProjectForm() {
 
     useEffect(() => {
         if (isEditMode) {
-            const fetchAndFilter = async () => {
+            const fetchDetail = async () => {
                 try {
-                    // 특정 상세조회 API 대신 전체 리스트 호출
-                    const res = await getProjects();
-                    const allProjects = res.data.data;
-                    const target = allProjects.find(p => p.id === parseInt(projectId));
+                    const res = await getDetailProject(projectId);
+                    const target = res.data.data;
                     if (target) {
                         setFormData({
                             title: target.title || "",
@@ -38,7 +36,7 @@ function ProjectForm() {
                     console.error("데이터 로딩 실패:", error);
                 }
             };
-            fetchAndFilter();
+            fetchDetail();
         }
     }, [projectId, isEditMode]);
 

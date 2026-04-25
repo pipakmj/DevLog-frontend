@@ -9,6 +9,9 @@ function ProjectDetail() {
     const { projectId } = useParams();
     const [project, setProject] = useState(null);
     const [commits, setCommits] = useState([]);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [isCommitsLoading, setIsCommitsLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const { isLoggedIn, user } = useContext(AuthContext);
 
@@ -24,8 +27,9 @@ function ProjectDetail() {
                 if (currentData && currentData.githubUrl) {
                     const parsed = parseGithubUrl(currentData.githubUrl);
                     if (parsed) {
-                        const commitData = await getRepoCommits(parsed.owner, parsed.repo);
+                        const commitData = await getRepoCommits(parsed.owner, parsed.repo, 1);
                         setCommits(commitData);
+                        if (commitData.length < 10) setHasMore(false);
                     }
                 }
             } catch (error) {
@@ -50,6 +54,25 @@ function ProjectDetail() {
         }
     };
 
+    const loadMoreCommits = async () => {
+        if (!project?.githubUrl || isCommitsLoading) return;
+
+        setIsCommitsLoading(true);
+        const parsed = parseGithubUrl(project.githubUrl);
+        if (parsed) {
+            const nextPage = page + 1;
+            const newCommits = await getRepoCommits(parsed.owner, parsed.repo, nextPage);
+
+            if (newCommits.length < 10) {
+                setHasMore(false);
+            }
+
+            setCommits(prev => [...prev, ...newCommits]);
+            setPage(nextPage);
+        }
+        setIsCommitsLoading(false);
+    };
+
     if (isLoading) return <div className="loading-screen">프로젝트 분석 중...</div>;
     if (!project) return <div>프로젝트를 찾을 수 없습니다.</div>;
 
@@ -64,7 +87,7 @@ function ProjectDetail() {
                     {project.demoUrl && <a href={project.demoUrl} target="_blank" rel="noreferrer" className="link-btn demo">Visit Live Site</a>}
                 </div>
             </header>
-            
+
             <section className="description-section">
                 <div className="section-title">
                     <h3>About Project</h3>
@@ -97,6 +120,16 @@ function ProjectDetail() {
                                 </div>
                             </div>
                         ))}
+                        {hasMore && (
+                            <div className="timeline-item load-more-item" onClick={loadMoreCommits}>
+                                <div className="timeline-node">
+                                    <div className="node-dot plus">+</div>
+                                </div>
+                                <div className="timeline-card load-more-card">
+                                    <p>{isCommitsLoading ? "..." : "과거 커밋 더 보기"}</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>
