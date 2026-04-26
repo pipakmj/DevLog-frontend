@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { createProject, updateProject, getProjects, getDetailProject } from '../api/projectApi';
+import { createProject, updateProject, getDetailProject } from '../api/projectApi';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function ProjectForm() {
     const { projectId } = useParams();
@@ -16,9 +17,13 @@ function ProjectForm() {
         thumbnail: ""
     });
 
+    const [isLoading, setIsLoading] = useState(isEditMode);
+    const [isSaving, setIsSaving] = useState(false);
+
     useEffect(() => {
         if (isEditMode) {
             const fetchDetail = async () => {
+                setIsLoading(true);
                 try {
                     const res = await getDetailProject(projectId);
                     const target = res.data.data;
@@ -34,6 +39,8 @@ function ProjectForm() {
                     }
                 } catch (error) {
                     console.error("데이터 로딩 실패:", error);
+                } finally { 
+                    setIsLoading(false);
                 }
             };
             fetchDetail();
@@ -47,6 +54,8 @@ function ProjectForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isSaving) return;
+        setIsSaving(true);
         try {
             if (isEditMode) {
                 await updateProject(projectId, formData);
@@ -58,8 +67,14 @@ function ProjectForm() {
             navigate("/projectlist");
         } catch (error) {
             console.error("작업 중 오류 발생:", error);
+        } finally { 
+            setIsSaving(false);
         }
     };
+
+    if (isLoading) { 
+        return <LoadingSpinner message='프로젝트 정보를 불러오는 중입니다...' />
+    }
 
     return (
         <div className="form-container">
@@ -91,7 +106,7 @@ function ProjectForm() {
                 </div>
 
                 <div className="form-buttons">
-                    <button type="submit" className="submit-btn">{isEditMode ? "수정 완료" : "프로젝트 생성"}</button>
+                    <button type="submit" className="submit-btn" disabled={isSaving}>{isEditMode ? "수정 완료" : "프로젝트 생성"}</button>
                     <button type="button" onClick={() => navigate(-1)} className="cancel-btn">취소</button>
                 </div>
             </form>

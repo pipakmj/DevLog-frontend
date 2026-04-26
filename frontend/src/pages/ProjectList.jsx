@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { getProjects, getAllProjects } from '../api/projectApi';
 import { AuthContext } from '../context/AuthContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/ProjectList.css';
 
 function ProjectList() {
@@ -55,7 +56,7 @@ function ProjectList() {
         }
     };
 
-    if (isLoading && projects.length === 0) return <div className='list-loading'>프로젝트 로딩중..</div>;
+    if (isLoading && projects.length === 0) return <LoadingSpinner message="프로젝트 목록을 불러오고 있습니다..." />;
 
     return (
         <div className='project-list-container'>

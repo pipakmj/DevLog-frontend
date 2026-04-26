@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { getMyInfo, updateMyInfo } from '../api/userApi';
+import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/MyPage.css';
 
 function MyPage() {
@@ -57,7 +58,7 @@ function MyPage() {
         }
     };
 
-    if (isLoading) return <div className="loading-container">데이터를 불러오는 중...</div>;
+    if (isLoading) return <LoadingSpinner message="프로필 정보를 불러오는 중..." />;
 
     return (
         <div className="mypage-container">
