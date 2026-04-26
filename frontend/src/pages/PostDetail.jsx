@@ -4,6 +4,7 @@ import { deletePost, getLikeStatus, getPostDetail, toggleLike, updatePostViewCou
 import MDEditor from '@uiw/react-md-editor';
 import { AuthContext } from '../context/AuthContext';
 import { formatDate } from '../utils/formatDate';
+import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/PostDetail.css';
 import { createComment, deleteComment, getComments, updateComment } from '../api/commentApi';
 
@@ -104,8 +105,8 @@ function PostDetail() {
         setEditingId(comment.commentId);
         setEditInput(comment.content);
     };
-    
-    const handleEditSubmit = async (commentId) => { 
+
+    const handleEditSubmit = async (commentId) => {
         try {
             await updateComment(commentId, editInput);
             setEditingId(null);
@@ -156,7 +157,7 @@ function PostDetail() {
         return result;
     };
 
-    if (isLoading) return <div className="loading">글을 불러오는 중...</div>;
+    if (isLoading) return <LoadingSpinner message="게시글 내용을 불러오는 중..." />;
     if (!post) return <div className="error">게시글을 찾을 수 없습니다.</div>;
     return (
         <div className="post-detail-container" data-color-mode="dark">
@@ -226,35 +227,35 @@ function PostDetail() {
                             ) : (
                                 <>
                                     {editingId === c.commentId ? (
-                                            <div className="edit-form">
-                                                <textarea
-                                                    value={editInput}
-                                                    onChange={(e) => setEditInput(e.target.value)}
-                                                    autoFocus
-                                                />
-                                                <div className="edit-actions">
-                                                    <button onClick={() => handleEditSubmit(c.commentId)}>저장</button>
-                                                    <button onClick={() => setEditingId(null)}>취소</button>
-                                                </div>
+                                        <div className="edit-form">
+                                            <textarea
+                                                value={editInput}
+                                                onChange={(e) => setEditInput(e.target.value)}
+                                                autoFocus
+                                            />
+                                            <div className="edit-actions">
+                                                <button onClick={() => handleEditSubmit(c.commentId)}>저장</button>
+                                                <button onClick={() => setEditingId(null)}>취소</button>
                                             </div>
-                                        ) : (
-                                            <>
-                                                <p className = 'comment-content'>{c.content}</p>
-                                                {!c.parentId && isLoggedIn &&
-                                                    (<button className="reply-toggle-btn" onClick={() => setReplyToId(replyToId === c.commentId ? null : c.commentId)}>
-                                                        {replyToId === c.commentId ? "취소" : "답글"}
-                                                    </button>)}
-                                                {isLoggedIn && user?.nickname === c.nickname && (
-                                                    <>
-                                                        <button className="comment-delete-btn" onClick={() => handleCommentDelete(c.commentId)}>
-                                                            삭제
-                                                        </button>
-                                                        <button className="comment-edit-btn" onClick={() => handleEditClick(c)}>
-                                                            수정
-                                                        </button>
-                                                    </>
-                                                )}
-                                            </>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <p className='comment-content'>{c.content}</p>
+                                            {!c.parentId && isLoggedIn &&
+                                                (<button className="reply-toggle-btn" onClick={() => setReplyToId(replyToId === c.commentId ? null : c.commentId)}>
+                                                    {replyToId === c.commentId ? "취소" : "답글"}
+                                                </button>)}
+                                            {isLoggedIn && user?.nickname === c.nickname && (
+                                                <>
+                                                    <button className="comment-delete-btn" onClick={() => handleCommentDelete(c.commentId)}>
+                                                        삭제
+                                                    </button>
+                                                    <button className="comment-edit-btn" onClick={() => handleEditClick(c)}>
+                                                        수정
+                                                    </button>
+                                                </>
+                                            )}
+                                        </>
                                     )}
                                 </>
                             )}

@@ -182,18 +182,6 @@
     transform: translateX(4px);
 }
 
-/* 로딩 상태 */
-.list-loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: #3b82f6;
-    font-size: 1.2rem;
-    font-weight: 600;
-    background: #0a0a0a;
-}
-
 /* 🏁 프로젝트 탭 (세그먼트 컨트롤 스타일) */
 .project-tabs {
     display: flex;

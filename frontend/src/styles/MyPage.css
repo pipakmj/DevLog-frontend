@@ -155,17 +155,6 @@
     filter: grayscale(1);
 }
 
-/* 로딩 상태 스타일 */
-.loading-container {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #3b82f6;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-}
-
 /* 반응형 처리 */
 @media (max-width: 480px) {
     .mypage-card {

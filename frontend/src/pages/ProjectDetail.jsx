@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom'
 import { getProjects, deleteProject, getAllProjects, getDetailProject } from '../api/projectApi';
 import { getRepoCommits, parseGithubUrl } from '../api/githubApi';
 import { AuthContext } from "../context/AuthContext"
+import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/ProjectDetail.css';
 
 function ProjectDetail() {
@@ -73,7 +74,7 @@ function ProjectDetail() {
         setIsCommitsLoading(false);
     };
 
-    if (isLoading) return <div className="loading-screen">프로젝트 분석 중...</div>;
+    if (isLoading) return <LoadingSpinner message="프로젝트 상세 정보를 불러오는 중..." />;
     if (!project) return <div>프로젝트를 찾을 수 없습니다.</div>;
 
     return (

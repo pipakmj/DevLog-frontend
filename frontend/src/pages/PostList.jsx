@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAllPosts } from '../api/postApi';
 import { formatDate } from '../utils/formatDate';
+import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/PostList.css';
 import Pagination from '../components/Pagination';
 
@@ -28,7 +29,7 @@ function PostList() {
                 })
             } catch (error) {
                 console.log("게시글 목록을 가져오지 못했습니다.", error);
-            } finally { 
+            } finally {
                 setIsLoading(false);
             }
         };
@@ -39,6 +40,8 @@ function PostList() {
         setCurrentPage(page);
         window.scrollTo(0, 0);
     };
+
+    if (isLoading) return <LoadingSpinner message="포스트 목록을 불러오는 중..." />;
 
     return (
         <div className="post-list-container">
