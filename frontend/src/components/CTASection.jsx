@@ -24,7 +24,7 @@ export default function CTASection() {
                 type="button"
                 onClick={handleStart}
             >
-                회원가입
+                {isLoggedIn ? "대시보드 바로가기" : "지금 가입하기"}
             </button>
         </section>
     );

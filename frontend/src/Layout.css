@@ -16,7 +16,35 @@
 
 .main-content {
   min-height: calc(100vh - 72px - 200px);
-  /* 화면 높이 - Navbar - Footer 대략적 계산 */
+  position: relative;
+  overflow: hidden;
+}
+
+/* 🎨 Background Aura Animation */
+.main-content::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.12), transparent 70%);
+  z-index: -1;
+  animation: drift 20s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+
+.main-content::after {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  right: -10%;
+  width: 40%;
+  height: 40%;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.08), transparent 70%);
+  z-index: -1;
+  animation: drift 15s infinite alternate-reverse ease-in-out;
+  pointer-events: none;
 }
 
 .nav-logo {
@@ -80,10 +108,10 @@
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-/* Hero Section */
+/* Hero Section Animation */
 section.hero {
   text-align: center;
-  padding: 120px 24px;
+  padding: 140px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -91,9 +119,11 @@ section.hero {
 }
 
 .hero h1 {
-  font-size: 4rem;
-  max-width: 800px;
+  font-size: 4.5rem;
+  max-width: 900px;
   margin-bottom: 1rem;
+  line-height: 1.1;
+  animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .hero p {
@@ -101,11 +131,15 @@ section.hero {
   color: var(--text-muted);
   max-width: 600px;
   margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards;
 }
 
 .hero .cta-group {
   display: flex;
-  gap: 1rem;
+  gap: 1.2rem;
+  opacity: 0;
+  animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards;
 }
 
 /* Feature Section */
@@ -126,27 +160,44 @@ section.hero {
 
 .feature-card {
   background: var(--surface-dark);
-  padding: 2.5rem;
-  border-radius: 20px;
+  padding: 3rem;
+  border-radius: 24px;
   text-align: left;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  /* Scroll reveal 준비 */
+  transform: translateY(30px);
+}
+
+.feature-card.reveal {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-12px) scale(1.02);
   border-color: var(--primary);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5), 0 18px 36px -18px rgba(99, 102, 241, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.feature-card .icon {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  display: block;
 }
 
 .feature-card h3 {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   margin-bottom: 1rem;
-  color: var(--primary);
+  color: var(--text-main);
+  font-weight: 700;
 }
 
 .feature-card p {
   color: var(--text-muted);
+  line-height: 1.7;
 }
 
 /* CTA Section */
@@ -185,17 +236,73 @@ section.hero {
   font-weight: 500;
 }
 
-@media (max-width: 640px) {
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+
+  to {
+    transform: translate(100px, 50px) scale(1.2);
+  }
+}
+
+@media (max-width: 768px) {
   .hero h1 {
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
 
   .hero .cta-group {
     flex-direction: column;
     width: 100%;
+    gap: 0.8rem;
   }
 
-  .hero button {
-    width: 100%;
+  .feature-grid {
+    grid-template-columns: 1fr;
   }
+
+  .feature-card {
+    padding: 2rem;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero h1 {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.hero p {
+  opacity: 0;
+  /* 시작 시 숨김 */
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+  /* 0.2초 지연 */
+}
+
+.hero .cta-group {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.4s forwards;
+  /* 0.4초 지연 */
 }
