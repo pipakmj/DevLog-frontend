@@ -1,7 +1,19 @@
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 export default function CTASection() {
     const navigate = useNavigate();
+    const { isLoggedIn } = useContext(AuthContext);
+
+    const handleStart = () => {
+        if (isLoggedIn) {
+            navigate("/projectlist");
+        } else {
+            navigate("/signup");
+        }
+    };
+
     return (
         <section className="cta">
             <h2>지금 DevLog를 시작해보세요</h2>
@@ -10,7 +22,7 @@ export default function CTASection() {
             <button
                 className="primary-btn"
                 type="button"
-                onClick={() => navigate("/signup")}
+                onClick={handleStart}
             >
                 회원가입
             </button>
