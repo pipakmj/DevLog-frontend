@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { createProject, updateProject, getDetailProject } from '../api/projectApi';
+import { createProject, updateProject, getDetailProject, gitHubAnalyze } from '../api/projectApi';
 import LoadingSpinner from '../components/LoadingSpinner';
+import '../styles/ProjectForm.css';
 
 function ProjectForm() {
     const { projectId } = useParams();
@@ -19,6 +20,7 @@ function ProjectForm() {
 
     const [isLoading, setIsLoading] = useState(isEditMode);
     const [isSaving, setIsSaving] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     useEffect(() => {
         if (isEditMode) {
@@ -39,7 +41,7 @@ function ProjectForm() {
                     }
                 } catch (error) {
                     console.error("데이터 로딩 실패:", error);
-                } finally { 
+                } finally {
                     setIsLoading(false);
                 }
             };
@@ -67,12 +69,37 @@ function ProjectForm() {
             navigate("/projectlist");
         } catch (error) {
             console.error("작업 중 오류 발생:", error);
-        } finally { 
+        } finally {
             setIsSaving(false);
         }
     };
 
-    if (isLoading) { 
+    const handleAnalyze = async () => {
+        if (!formData.githubUrl) {
+            alert("GitHub URL을 먼저 입력해주세요.");
+            return;
+        }
+        setIsAnalyzing(true);
+        try {
+            const res = await gitHubAnalyze({ gitUrl: formData.githubUrl });
+            const aiData = res.data.data;
+            if (aiData) {
+                setFormData(prev => ({
+                    ...prev,
+                    techStack: aiData.techStack.join(", "),
+                    description: `${aiData.description}\n\n### 주요 기능\n${aiData.features.map(f => `- ${f}`).join("\n")}`
+                }));
+                alert("AI 분석 데이터가 입력되었습니다! 내용을 검토하고 수정해 주세요.");
+            }
+        } catch (error) {
+            console.error("분석 실패:", error);
+            alert("AI 분석 중 오류가 발생했습니다. 직접 입력해 주세요.");
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
+
+    if (isLoading) {
         return <LoadingSpinner message='프로젝트 정보를 불러오는 중입니다...' />
     }
 
@@ -90,7 +117,31 @@ function ProjectForm() {
                 </div>
                 <div className="input-group">
                     <label>GitHub URL</label>
-                    <input name="githubUrl" value={formData.githubUrl} onChange={handleChange} placeholder="https://github.com/..." />
+                    <div className="input-with-button">
+                        <input
+                            name="githubUrl"
+                            value={formData.githubUrl}
+                            onChange={handleChange}
+                            placeholder="https://github.com/..."
+                        />
+                        <button
+                            type="button"
+                            onClick={handleAnalyze}
+                            disabled={isAnalyzing}
+                            className="analyze-btn"
+                        >
+                            {isAnalyzing ? (
+                                <>
+                                    <div className="mini-spinner"></div>
+                                    <span>분석 중...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span>🪄 AI 분석</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
                 </div>
                 <div className="input-group">
                     <label>배포 주소</label>
