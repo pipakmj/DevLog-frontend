@@ -108,14 +108,6 @@ function ProjectForm() {
             <h2>{isEditMode ? "프로젝트 수정" : "새 프로젝트 등록"}</h2>
             <form onSubmit={handleSubmit} className="project-form">
                 <div className="input-group">
-                    <label>프로젝트 제목</label>
-                    <input name="title" value={formData.title} onChange={handleChange} placeholder="제목을 입력하세요" required />
-                </div>
-                <div className="input-group">
-                    <label>상세 설명</label>
-                    <textarea name="description" value={formData.description} onChange={handleChange} placeholder="프로젝트에 대해 설명해주세요" required rows="5" />
-                </div>
-                <div className="input-group">
                     <label>GitHub URL</label>
                     <div className="input-with-button">
                         <input
@@ -142,6 +134,24 @@ function ProjectForm() {
                             )}
                         </button>
                     </div>
+                </div>
+                <div className="input-group">
+                    <label>프로젝트 제목</label>
+                    <input name="title" value={formData.title} onChange={handleChange} placeholder="제목을 입력하세요" required />
+                </div>
+                <div className="input-group">
+                    <label>상세 설명</label>
+                    <textarea name="description" value={formData.description} onChange={handleChange} placeholder="프로젝트에 대해 설명해주세요" required rows="5" />
+                </div>
+                <div className="input-group">
+                    <label>담당 역할</label>
+                    <textarea
+                        name="myRole"
+                        value={formData.myRole}
+                        onChange={handleChange}
+                        placeholder="예: 백엔드 API 설계 및 JWT 인증 구현, CI/CD 파이프라인 구축"
+                        rows="3"
+                    />
                 </div>
                 <div className="input-group">
                     <label>배포 주소</label>
