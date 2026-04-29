@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = (userData) => {
         setIsLoggedIn(true);
-        setUser({ nickname: userData.nickname });
+        setUser({ nickname: userData.nickname, userId: userData.id });
         if (userData.nickname) {
             localStorage.setItem("nickname", userData.nickname);
         }
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
             try {
                 const res = await getMyInfo();
                 setIsLoggedIn(true);
-                setUser({ nickname: res.data.data.nickname });
+                setUser({ nickname: res.data.data.nickname, userId: res.data.data.id });
             } catch (error) {
                 console.error("세션이 만료되었거나 올바르지 않습니다.", error);
                 logout({ silent: true });
