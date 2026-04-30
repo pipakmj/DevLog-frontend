@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { getProjects, deleteProject, getAllProjects, getDetailProject } from '../api/projectApi';
+import { deleteProject, getDetailProject } from '../api/projectApi';
 import { getRepoCommits, parseGithubUrl } from '../api/githubApi';
 import { AuthContext } from "../context/AuthContext"
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -97,6 +97,16 @@ function ProjectDetail() {
                 <p className="project-text">{project.description}</p>
             </section>
 
+            {project.myRole && (
+                <section className="myrole-section">
+                    <div className="section-title">
+                        <h3>My Role</h3>
+                        <div className="title-underline"></div>
+                    </div>
+                    <p className="project-text">{project.myRole}</p>
+                </section>
+            )}
+
             <section className="activity-section">
                 <div className="section-title">
                     <h3>GitHub Development Journey</h3>
@@ -135,7 +145,6 @@ function ProjectDetail() {
                 </div>
             </section>
             {isLoggedIn && user?.userId === project?.userId && (<div className="admin-actions">
-                
                 <Link to={`/project/edit/${project.id}`} className="link-btn edit">Edit</Link>
                 <button onClick={handleDelete} className="link-btn delete">Delete</button>
             </div>)}
