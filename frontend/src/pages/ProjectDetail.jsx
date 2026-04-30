@@ -97,13 +97,15 @@ function ProjectDetail() {
                 <p className="project-text">{project.description}</p>
             </section>
 
-            <section className="myrole-section">
-                <div className="section-title">
-                    <h3>My Role</h3>
-                    <div className="title-underline"></div>
-                </div>
-                <p className="project-text">{project.myRole}</p>
-            </section>
+            {project.myRole && (
+                <section className="myrole-section">
+                    <div className="section-title">
+                        <h3>My Role</h3>
+                        <div className="title-underline"></div>
+                    </div>
+                    <p className="project-text">{project.myRole}</p>
+                </section>
+            )}
 
             <section className="activity-section">
                 <div className="section-title">
