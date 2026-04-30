@@ -15,7 +15,8 @@ function ProjectForm() {
         githubUrl: "",
         demoUrl: "",
         techStack: "",
-        thumbnail: ""
+        thumbnail: "",
+        myRole: ""
     });
 
     const [isLoading, setIsLoading] = useState(isEditMode);
@@ -36,7 +37,8 @@ function ProjectForm() {
                             githubUrl: target.githubUrl || "",
                             demoUrl: target.demoUrl || "",
                             techStack: target.techStack || "",
-                            thumbnail: target.thumbnail || ""
+                            thumbnail: target.thumbnail || "",
+                            myRole: target.myRole || ""
                         });
                     }
                 } catch (error) {
@@ -82,6 +84,7 @@ function ProjectForm() {
         setIsAnalyzing(true);
         try {
             const res = await gitHubAnalyze({ gitUrl: formData.githubUrl });
+            const remaining = res.headers['x-ratelimit-remaining'];
             const aiData = res.data.data;
             if (aiData) {
                 setFormData(prev => ({
@@ -89,11 +92,18 @@ function ProjectForm() {
                     techStack: aiData.techStack.join(", "),
                     description: `${aiData.description}\n\n### 주요 기능\n${aiData.features.map(f => `- ${f}`).join("\n")}`
                 }));
-                alert("AI 분석 데이터가 입력되었습니다! 내용을 검토하고 수정해 주세요.");
+                alert(`AI 분석 데이터가 입력되었습니다! 내용을 검토하고 수정해 주세요. (남은 횟수 ${remaining})`);
             }
         } catch (error) {
-            console.error("분석 실패:", error);
-            alert("AI 분석 중 오류가 발생했습니다. 직접 입력해 주세요.");
+            const status = error.response?.status;
+            const message = error.response?.data?.message || "오류가 발생했습니다.";
+
+            if (status === 429) {
+                alert("일일 한도 초과: " + message);
+            } else {
+                console.error("분석 실패:", error);
+                alert("AI 분석 중 오류가 발생했습니다. 직접 입력해 주세요.");
+            }
         } finally {
             setIsAnalyzing(false);
         }
