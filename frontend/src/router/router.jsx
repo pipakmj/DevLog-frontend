@@ -11,6 +11,8 @@ import PostList from "../pages/PostList";
 import PostWrite from "../pages/PostWrite";
 import PostDetail from "../pages/PostDetail";
 import ProtectedRoute from "../components/ProtectedRoute";
+import FindPassword from "../pages/FindPassword";
+import ResetPassword from "../pages/ResetPassword";
 
 export const router = createBrowserRouter([
     {
@@ -28,6 +30,14 @@ export const router = createBrowserRouter([
             {
                 path: "/signup",
                 element: <Signup />
+            },
+            {
+                path: "/forgot-password",
+                element: <FindPassword />
+            },
+            {
+                path: "/passwordreset",
+                element: <ResetPassword />
             },
             {
                 path: "/mypage",

@@ -17,6 +17,18 @@ export const signUp = (data) => {
     return axiosInstance.post("/auth/signup", data)
 }
 
+export const findPassword = (email) => { 
+    return axiosInstance.post(`/auth/password/forgot?email=${email}`);
+}
+
+export const sendValificationCode = (data) => { 
+    return axiosInstance.post("/auth/password/code", data);
+};
+
+export const resetPassword = (data) => { 
+    return axiosInstance.post("/auth/password/reset", data);
+};
+
 export const signOut = () => { 
     return axiosInstance.post("/auth/signout");
 }
