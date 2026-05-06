@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { createProject, updateProject, getDetailProject, gitHubAnalyze } from '../api/projectApi';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/ProjectForm.css';
+import ImageUploader from '../components/ImageUploader';
 
 function ProjectForm() {
     const { projectId } = useParams();
@@ -172,8 +173,10 @@ function ProjectForm() {
                     <input name="techStack" value={formData.techStack} onChange={handleChange} placeholder="React, Spring, MySQL 등 (쉼표 구분)" />
                 </div>
                 <div className="input-group">
-                    <label>이미지 경로</label>
-                    <input name="thumbnail" value={formData.thumbnail} onChange={handleChange} placeholder="이미지 URL" />
+                    <ImageUploader
+                        imageUrl={formData.thumbnail}
+                        onImageUpload={(url) => setFormData({...formData, thumbnail: url})}
+                    />
                 </div>
 
                 <div className="form-buttons">
