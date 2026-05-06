@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Auth.css';
-import { signUp } from '../api/authApi';
+import { signUp, signUpSendCode, signUpVerifyCode } from '../api/authApi';
 
 function Signup() {
     const [userEmail, setUserEmail] = useState("");
@@ -12,10 +12,70 @@ function Signup() {
     const [isAgreed, setIsAgreed] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const navigate = useNavigate(); 
+    const [isCodeSent, setIsCodeSent] = useState(false);
+    const [verificationCode, setVerificationCode] = useState("");
+    const [isEmailVerified, setIsEmailVerified] = useState(false);
+    const [isSendingCode, setIsSendingCode] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(300);
+
+    const navigate = useNavigate();
 
     const isPasswordMatch = userPassword === checkPassword;
-    const canSubmit = userEmail && userPassword && isPasswordMatch && userNickname && isAgreed;
+    const isPasswordValid = userPassword.length >= 8 && /[a-zA-Z]/.test(userPassword) && /[0-9]/.test(userPassword);
+    const canSubmit = userEmail && userPassword && isPasswordValid && isPasswordMatch && userNickname && isAgreed && isEmailVerified;
+
+    useEffect(() => {
+        let timer;
+        if (isCodeSent && !isEmailVerified && timeLeft > 0) {
+            timer = setInterval(() => {
+                setTimeLeft((prev) => prev - 1);
+            }, 1000);
+        }
+        return () => clearInterval(timer);
+    }, [isCodeSent, isEmailVerified, timeLeft]);
+
+    const handleSendVerificationCode = async () => {
+        try {
+            setIsSendingCode(true);
+            setErrorMessage("");
+
+            await signUpSendCode(userEmail);
+
+            setIsCodeSent(true);
+            setTimeLeft(300);
+            setVerificationCode("");
+            alert("인증번호가 전송되었습니다.");
+        } catch (error) {
+            setErrorMessage(error.response?.data?.message || "이메일 전송에 실패했습니다.");
+        } finally {
+            setIsSendingCode(false);
+        }
+    };
+
+    const handleVerifyCode = async () => {
+        if (timeLeft === 0) {
+            setErrorMessage("인증 시간이 만료되었습니다. 코드를 재전송해주세요.");
+            return;
+        }
+        try {
+            setIsLoading(true);
+            setErrorMessage("");
+
+            const res = await signUpVerifyCode({
+                email: userEmail,
+                code: verificationCode
+            })
+            if (res.data.data) {
+                setIsEmailVerified(true);
+            } else {
+                setErrorMessage("잘못된 인증 코드입니다.");
+            }
+        } catch (error) {
+            setErrorMessage(error.response?.data?.message || "인증 코드 검증에 실패했습니다.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -40,7 +100,7 @@ function Signup() {
         } catch (error) {
             const message = error.response?.data?.message || "회원가입 중 오류가 발생했습니다.";
             setErrorMessage(message);
-        } finally { 
+        } finally {
             setIsLoading(false);
         }
     }
@@ -59,28 +119,76 @@ function Signup() {
                 <form className='auth-form' onSubmit={handleSubmit}>
                     <div className='input-group'>
                         <label>이메일 *</label>
-                        <input
-                            type='email'
-                            className='auth-input'
-                            placeholder='name@example.com'
-                            value={userEmail}
-                            onChange={(e) => setUserEmail(e.target.value)}
-                            required
-                            disabled={isLoading}
-                        />
+                        <div className='email-verify-row'>
+                            <input
+                                type='email'
+                                className='auth-input'
+                                placeholder='name@example.com'
+                                value={userEmail}
+                                onChange={(e) => setUserEmail(e.target.value)}
+                                required
+                                disabled={isLoading || isEmailVerified}
+                            />
+                            <button
+                                type="button"
+                                className={`verify-send-btn ${isEmailVerified ? 'verified' : ''}`}
+                                onClick={handleSendVerificationCode}
+                                disabled={!userEmail || isEmailVerified || isSendingCode}
+                            >
+                                {isSendingCode ? "전송 중..." : isEmailVerified ? "인증완료" : isCodeSent ? "재전송" : "코드 전송"}
+                            </button>
+                        </div>
+                        {isEmailVerified && (
+                            <p className="success-message">✅ 이메일 인증이 완료되었습니다.</p>
+                        )}
                     </div>
+
+                    {isCodeSent && !isEmailVerified && (
+                        <div className='input-group'>
+                            <label>인증 번호 *</label>
+                            <div className='email-verify-row'>
+                                <input
+                                    type='text'
+                                    className='auth-input'
+                                    placeholder='6자리 인증번호 입력'
+                                    value={verificationCode}
+                                    onChange={(e) => setVerificationCode(e.target.value)}
+                                    disabled={isLoading}
+                                    maxLength={6}
+                                />
+                                <button
+                                    type="button"
+                                    className='verify-confirm-btn'
+                                    onClick={handleVerifyCode}
+                                    disabled={!verificationCode || isLoading}
+                                >
+                                    확인
+                                </button>
+                            </div>
+                            {timeLeft > 0 ? (
+                                <p className={`timer-text ${timeLeft <= 60 ? 'timer-warning' : ''}`}>
+                                    남은 시간: {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+                                </p>
+                            ) : (
+                                <p className="error-message">인증 시간이 만료되었습니다. 코드를 재전송해주세요.</p>
+                            )}
+                        </div>
+                    )}
 
                     <div className='input-group'>
                         <label>비밀번호 *</label>
                         <input
                             type='password'
                             className='auth-input'
-                            placeholder='••••••••'
+                            placeholder='영문, 숫자 포함 8자 이상'
                             value={userPassword}
                             onChange={(e) => setUserPassword(e.target.value)}
                             required
                             disabled={isLoading}
                         />
+                        {userPassword && !isPasswordValid && (
+                            <p className="error-message">비밀번호는 영문, 숫자를 포함하여 8자 이상이어야 합니다.</p>
+                        )}
                     </div>
 
                     <div className='input-group'>
@@ -132,7 +240,7 @@ function Signup() {
                             onChange={(e) => setIsAgreed(e.target.checked)}
                         />
                         <label htmlFor="terms">
-                            이용약관 및 개인정보 처리 방침에 동의합니다. *
+                            <Link to='/terms' target='_blank' className='terms-link'>이용약관 및 개인정보 처리방침</Link>에 동의합니다. *
                         </label>
                     </div>
 

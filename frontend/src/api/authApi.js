@@ -17,6 +17,14 @@ export const signUp = (data) => {
     return axiosInstance.post("/auth/signup", data)
 }
 
+export const signUpSendCode = (email) => { 
+    return axiosInstance.post(`/auth/signup/send-code?email=${email}`);
+};
+
+export const signUpVerifyCode = (data) => {
+    return axiosInstance.post("/auth/signup/verify-code", data);
+};
+
 export const findPassword = (email) => { 
     return axiosInstance.post(`/auth/password/forgot?email=${email}`);
 }

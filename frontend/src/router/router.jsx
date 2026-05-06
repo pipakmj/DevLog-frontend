@@ -13,6 +13,7 @@ import PostDetail from "../pages/PostDetail";
 import ProtectedRoute from "../components/ProtectedRoute";
 import FindPassword from "../pages/FindPassword";
 import ResetPassword from "../pages/ResetPassword";
+import Terms from "../pages/Terms";
 
 export const router = createBrowserRouter([
     {
@@ -74,6 +75,10 @@ export const router = createBrowserRouter([
             {
                 path: "/posts/:postId",
                 element: <PostDetail />
+            },
+            {
+                path: "/terms",
+                element: <Terms />
             },
         ]
     },
