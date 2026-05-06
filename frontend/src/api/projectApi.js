@@ -27,3 +27,9 @@ export const updateProject = (projectId, userProject) => {
 export const deleteProject = (projectId) => {
     return axiosInstance.delete(`/api/project/${projectId}`);
 };
+
+export const gitHubAnalyze = (gitUrl) => { 
+    return axiosInstance.post("/api/github/analyze", gitUrl, {
+        timeout: 60000
+    })
+};

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { createProject, updateProject, getDetailProject } from '../api/projectApi';
+import { createProject, updateProject, getDetailProject, gitHubAnalyze } from '../api/projectApi';
 import LoadingSpinner from '../components/LoadingSpinner';
+import '../styles/ProjectForm.css';
 
 function ProjectForm() {
     const { projectId } = useParams();
@@ -14,11 +15,13 @@ function ProjectForm() {
         githubUrl: "",
         demoUrl: "",
         techStack: "",
-        thumbnail: ""
+        thumbnail: "",
+        myRole: ""
     });
 
     const [isLoading, setIsLoading] = useState(isEditMode);
     const [isSaving, setIsSaving] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     useEffect(() => {
         if (isEditMode) {
@@ -34,12 +37,13 @@ function ProjectForm() {
                             githubUrl: target.githubUrl || "",
                             demoUrl: target.demoUrl || "",
                             techStack: target.techStack || "",
-                            thumbnail: target.thumbnail || ""
+                            thumbnail: target.thumbnail || "",
+                            myRole: target.myRole || ""
                         });
                     }
                 } catch (error) {
                     console.error("데이터 로딩 실패:", error);
-                } finally { 
+                } finally {
                     setIsLoading(false);
                 }
             };
@@ -67,12 +71,45 @@ function ProjectForm() {
             navigate("/projectlist");
         } catch (error) {
             console.error("작업 중 오류 발생:", error);
-        } finally { 
+        } finally {
             setIsSaving(false);
         }
     };
 
-    if (isLoading) { 
+    const handleAnalyze = async () => {
+        if (!formData.githubUrl) {
+            alert("GitHub URL을 먼저 입력해주세요.");
+            return;
+        }
+        setIsAnalyzing(true);
+        try {
+            const res = await gitHubAnalyze({ gitUrl: formData.githubUrl });
+            const remaining = res.headers['x-ratelimit-remaining'];
+            const aiData = res.data.data;
+            if (aiData) {
+                setFormData(prev => ({
+                    ...prev,
+                    techStack: aiData.techStack.join(", "),
+                    description: `${aiData.description}\n\n### 주요 기능\n${aiData.features.map(f => `- ${f}`).join("\n")}`
+                }));
+                alert(`AI 분석 데이터가 입력되었습니다! 내용을 검토하고 수정해 주세요. (남은 횟수 ${remaining})`);
+            }
+        } catch (error) {
+            const status = error.response?.status;
+            const message = error.response?.data?.message || "오류가 발생했습니다.";
+
+            if (status === 429) {
+                alert("일일 한도 초과: " + message);
+            } else {
+                console.error("분석 실패:", error);
+                alert("AI 분석 중 오류가 발생했습니다. 직접 입력해 주세요.");
+            }
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
+
+    if (isLoading) {
         return <LoadingSpinner message='프로젝트 정보를 불러오는 중입니다...' />
     }
 
@@ -80,6 +117,34 @@ function ProjectForm() {
         <div className="form-container">
             <h2>{isEditMode ? "프로젝트 수정" : "새 프로젝트 등록"}</h2>
             <form onSubmit={handleSubmit} className="project-form">
+                <div className="input-group">
+                    <label>GitHub URL</label>
+                    <div className="input-with-button">
+                        <input
+                            name="githubUrl"
+                            value={formData.githubUrl}
+                            onChange={handleChange}
+                            placeholder="https://github.com/..."
+                        />
+                        <button
+                            type="button"
+                            onClick={handleAnalyze}
+                            disabled={isAnalyzing}
+                            className="analyze-btn"
+                        >
+                            {isAnalyzing ? (
+                                <>
+                                    <div className="mini-spinner"></div>
+                                    <span>분석 중...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span>🪄 AI 분석</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
                 <div className="input-group">
                     <label>프로젝트 제목</label>
                     <input name="title" value={formData.title} onChange={handleChange} placeholder="제목을 입력하세요" required />
@@ -89,8 +154,14 @@ function ProjectForm() {
                     <textarea name="description" value={formData.description} onChange={handleChange} placeholder="프로젝트에 대해 설명해주세요" required rows="5" />
                 </div>
                 <div className="input-group">
-                    <label>GitHub URL</label>
-                    <input name="githubUrl" value={formData.githubUrl} onChange={handleChange} placeholder="https://github.com/..." />
+                    <label>담당 역할</label>
+                    <textarea
+                        name="myRole"
+                        value={formData.myRole}
+                        onChange={handleChange}
+                        placeholder="예: 백엔드 API 설계 및 JWT 인증 구현, CI/CD 파이프라인 구축"
+                        rows="3"
+                    />
                 </div>
                 <div className="input-group">
                     <label>배포 주소</label>

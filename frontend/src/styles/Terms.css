@@ -1,0 +1,154 @@
+.terms-container {
+    display: flex;
+    justify-content: center;
+    padding: 3rem 2rem;
+    min-height: calc(100vh - 100px);
+}
+
+.terms-card {
+    background: rgba(30, 41, 59, 0.7);
+    padding: 2.5rem;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 800px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(20px);
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.terms-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.terms-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+.terms-header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* 탭 */
+.terms-tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 2rem;
+}
+
+.terms-tab {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.terms-tab:hover {
+    color: var(--text-main);
+}
+
+.terms-tab.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+/* 본문 */
+.terms-content {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.terms-body section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.terms-body section:last-of-type {
+    border-bottom: none;
+}
+
+.terms-body h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.75rem;
+}
+
+.terms-body p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.terms-body ol,
+.terms-body ul {
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.terms-body li {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.8;
+}
+
+.terms-body li strong {
+    color: var(--text-main);
+}
+
+/* 테이블 */
+.terms-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.75rem;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.terms-table th,
+.terms-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.terms-table th {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.terms-table td {
+    color: var(--text-muted);
+    background: rgba(15, 23, 42, 0.3);
+}
+
+/* 시행일 */
+.terms-notice {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-align: right;
+    font-style: italic;
+}

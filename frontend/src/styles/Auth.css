@@ -247,3 +247,89 @@
     text-align: center;
     animation: fadeIn 0.4s ease-out;
 }
+
+/* ===== 이메일 인증 ===== */
+.email-verify-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.email-verify-row .auth-input {
+    flex: 1;
+    min-width: 0;
+}
+
+.verify-send-btn,
+.verify-confirm-btn {
+    white-space: nowrap;
+    padding: 0.8rem 1rem;
+    margin-top: 0;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.verify-send-btn {
+    background: rgba(15, 23, 42, 0.6);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.verify-send-btn:hover:not(:disabled) {
+    background: rgba(99, 102, 241, 0.15);
+}
+
+.verify-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.verify-send-btn.verified {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border-color: #10b981;
+}
+
+.verify-confirm-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+}
+
+.verify-confirm-btn:hover:not(:disabled) {
+    background: #4f46e5;
+}
+
+.verify-confirm-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.success-message {
+    color: #10b981;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+.timer-text {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+.timer-text.timer-warning {
+    color: #ef4444;
+}
+
+.terms-link {
+    color: var(--primary);
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.terms-link:hover {
+    color: #818cf8;
+}
