@@ -4,6 +4,7 @@ import { getProjects, getAllProjects } from '../api/projectApi';
 import { AuthContext } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/ProjectList.css';
+import image from '../assets/DevLog_Thumbnail.png';
 
 function ProjectList() {
     const [projects, setProjects] = useState([]);
@@ -99,7 +100,7 @@ function ProjectList() {
                         {projects.map(project => (
                             <article key={project.id} className='project-card'>
                                 <div className="card-image">
-                                    <img src={project.thumbnail} alt={project.title} />
+                                    <img src={project.thumbnail || image} alt={project.title} />
                                     <div className="card-overlay highlight">
                                         <span>상세 보기</span>
                                     </div>

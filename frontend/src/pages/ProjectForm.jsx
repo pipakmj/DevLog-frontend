@@ -9,6 +9,7 @@ function ProjectForm() {
     const { projectId } = useParams();
     const navigate = useNavigate();
     const isEditMode = !!projectId;
+    const DEFAULT_THUMBNAIL = "https://res.cloudinary.com/dewu2ysbn/image/upload/q_auto/f_auto/v1778639810/DevLog_Thumbnail_uzj0x1.png"
 
     const [formData, setFormData] = useState({
         title: "",
@@ -62,11 +63,16 @@ function ProjectForm() {
         if (isSaving) return;
         setIsSaving(true);
         try {
+            const submitData = { ...formData };
+            if (!submitData.thumbnail) {
+                submitData.thumbnail = DEFAULT_THUMBNAIL;
+            }
+
             if (isEditMode) {
-                await updateProject(projectId, formData);
+                await updateProject(projectId, submitData);
                 alert("수정 되었습니다.");
             } else {
-                await createProject(formData);
+                await createProject(submitData);
                 alert("등록 되었습니다.");
             }
             navigate("/projectlist");
@@ -175,7 +181,7 @@ function ProjectForm() {
                 <div className="input-group">
                     <ImageUploader
                         imageUrl={formData.thumbnail}
-                        onImageUpload={(url) => setFormData({...formData, thumbnail: url})}
+                        onImageUpload={(url) => setFormData({ ...formData, thumbnail: url})}
                     />
                 </div>
 

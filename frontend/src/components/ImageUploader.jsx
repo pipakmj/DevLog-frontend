@@ -78,7 +78,7 @@ function ImageUploader({ imageUrl, onImageUpload }) {
                   <img src={imageUrl} alt="썸네일 미리보기" className="preview-image" />
                   <div className="preview-overlay">
                       <span>🔄 변경하기</span>
-                      <button className="remove-btn" onClick={handleRemove}>✕ 삭제</button>
+                      <button type='button' className="remove-btn" onClick={handleRemove}>✕ 삭제</button>
                   </div>
               </div>
           ) : (
