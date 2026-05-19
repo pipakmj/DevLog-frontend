@@ -11,6 +11,7 @@ function PostList() {
     const [pageInfo, setPageInfo] = useState({ number: 0, totalPages: 0 });
     const [currentPage, setCurrentPage] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    const [isLast, setIsLast] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,10 +21,11 @@ function PostList() {
                 const res = await getAllPosts(currentPage, 10);
                 const data = res.data.data;
 
+                setIsLast(data.last);
                 setPosts(data.content);
 
                 setPageInfo({
-                    number: data.number,
+                    number: data.pageNumber,
                     totalPages: data.totalPages,
                     totalElements: data.totalElements,
                 })

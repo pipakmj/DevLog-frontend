@@ -31,7 +31,7 @@ function ProjectList() {
 
             const data = res.data.data;
             const newData = data.content;
-            const hasNext = !data.last;
+            const hasNext = data.hasNext;
 
             setHasMore(hasNext);
 
