@@ -14,6 +14,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import FindPassword from "../pages/FindPassword";
 import ResetPassword from "../pages/ResetPassword";
 import Terms from "../pages/Terms";
+import TechTrends from "../pages/TechTrends";
 
 export const router = createBrowserRouter([
     {
@@ -79,6 +80,10 @@ export const router = createBrowserRouter([
             {
                 path: "/terms",
                 element: <Terms />
+            },
+            {
+                path: "/trends",
+                element: <TechTrends />
             },
         ]
     },
