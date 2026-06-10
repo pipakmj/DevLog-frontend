@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useCallback } from 'react';
 import { fetchGitHubTrending, fetchHackerNews, fetchDevToArticles } from '../api/trendApi';
 import { getBookmarks, addBookmark, removeBookmark } from '../api/bookmarkApi';
 import { AuthContext } from '../context/AuthContext';
@@ -117,7 +117,7 @@ export default function TechTrends() {
         setTimeout(() => setToast(prev => ({ ...prev, show: false })), 2000);
     };
 
-    const fetchData = async (tab) => {
+    const fetchData = useCallback(async (tab) => {
         setIsLoading(true);
         setError(null);
 
@@ -158,11 +158,11 @@ export default function TechTrends() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [isLoggedIn, language, period, hnCategory, devtoTag]); // 상태 의존성 추가
 
     useEffect(() => {
         fetchData(activeTab);
-    }, [activeTab, language, period, hnCategory, devtoTag]);
+    }, [activeTab, fetchData]); // 경고 해결
 
     const handleRefresh = () => {
         fetchData(activeTab);
