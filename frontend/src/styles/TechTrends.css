@@ -356,52 +356,419 @@
     gap: 20px;
 }
 
-.card-link-wrapper {
+/* ─── Card Components ────────────────── */
+.trend-card {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 20px;
+    overflow: hidden;
+    height: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    backdrop-filter: blur(10px);
+}
+
+.trend-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-8px);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.card-image-wrap {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111;
+}
+
+.card-body {
+    padding: 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     text-decoration: none;
     color: inherit;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
 }
 
-/* ─── GitHub Card Adjust ──────────────── */
-.github-card {
+/* ─── Internal Controls ──────────────── */
+.card-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(8px);
     display: flex;
-    flex-direction: column;
-    padding: 24px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 18px;
-    position: relative;
-    overflow: hidden;
-    height: 100%;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 20;
 }
 
-/* ─── HN Card Adjust ─────────────────── */
-.hn-card {
-    position: relative;
+.trend-card:hover .card-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+.overlay-content {
     display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    padding: 20px 24px;
-    padding-right: 60px;
-    /* space for bookmark */
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 14px;
+    gap: 16px;
+    transform: translateY(10px);
+    transition: transform 0.3s ease;
+}
+
+.trend-card:hover .overlay-content {
+    transform: translateY(0);
+}
+
+.overlay-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.overlay-btn:hover {
+    background: white;
+    color: #0f172a;
+    transform: scale(1.1);
+}
+
+.overlay-btn.bookmark.active {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.2);
+    border-color: #fbbf24;
+}
+
+.overlay-btn.bookmark.active:hover {
+    background: #fbbf24;
+    color: #0f172a;
+}
+
+.source-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 5px 12px;
+    border-radius: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 30;
+    /* 오버레이보다 높게 설정하여 정보 식별 유지 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.source-badge.github {
+    background: #24292e;
+    color: #fff;
+}
+
+.source-badge.hackernews {
+    background: #ff6600;
+    color: #fff;
+}
+
+.source-badge.devto {
+    background: #000;
+    color: #fff;
+}
+
+.card-rank {
+    position: absolute;
+    bottom: 12px;
+    left: 14px;
+    font-size: 2rem;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.1);
+    line-height: 0.8;
+}
+
+/* ─── GitHub Specific ────────────────── */
+.github-bg {
+    background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+}
+
+.github-avatar-large {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    background: #fff;
+}
+
+.repo-name {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 1.15rem;
+    font-weight: 700;
     margin-bottom: 12px;
+    color: #f8fafc;
 }
 
-/* ─── DevTo Card Adjust ───────────────── */
-.devto-card {
-    position: relative;
+.owner-name {
+    opacity: 0.6;
+    font-weight: 400;
+}
+
+.slash {
+    opacity: 0.3;
+}
+
+.card-desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #94a3b8;
+    margin-bottom: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+}
+
+.card-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 0.85rem;
+    color: #64748b;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.lang-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+/* ─── HN Specific ────────────────────── */
+.hn-bg {
+    background: linear-gradient(135deg, #ff6600 0%, #e65c00 100%);
+}
+
+.hn-score-badge {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.hn-logo-box-large {
+    font-size: 4rem;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.25);
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.hn-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f8fafc;
+    text-decoration: none;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.hn-author-text {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 16px;
+}
+
+.hn-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 20px;
+}
+
+.hn-discuss-link {
+    margin-top: auto;
+    font-size: 0.9rem;
+    color: #ff6600;
+    text-decoration: none;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+}
+
+.hn-discuss-link:hover {
+    gap: 10px;
+    text-decoration: underline;
+}
+
+/* ─── Status Components ───────────────── */
+.loading-container,
+.empty-state,
+.error-state {
     display: flex;
     flex-direction: column;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 18px;
-    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    margin-top: 20px;
+}
+
+.error-state {
+    border-color: rgba(239, 68, 68, 0.2);
+    background: rgba(239, 68, 68, 0.02);
+}
+
+.error-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.error-state h3 {
+    color: #f8fafc;
+    margin-bottom: 8px;
+}
+
+.error-state p {
+    color: #ef4444;
+    margin-bottom: 24px;
+    max-width: 400px;
+}
+
+.retry-btn {
+    padding: 10px 24px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.retry-btn:hover {
+    background: #dc2626;
+    transform: scale(1.05);
+}
+
+.loading-container p {
+    margin-top: 16px;
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+/* ─── DevTo Specific ─────────────────── */
+.devto-cover-img {
+    width: 100%;
     height: 100%;
+    object-fit: cover;
+}
+
+.devto-placeholder-bg {
+    width: 100%;
+    height: 100%;
+    background: #171717;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.devto-icon-large {
+    font-size: 2.5rem;
+    opacity: 0.5;
+}
+
+.devto-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.devto-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.devto-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.devto-title:hover {
+    color: #6366f1;
+}
+
+.devto-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: auto;
+}
+
+.devto-tag {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.devto-stats {
+    margin-top: 16px;
+    display: flex;
+    gap: 16px;
+    font-size: 0.8rem;
+    color: #94a3b8;
 }
 
 /* ─────────────────────────────────────── */

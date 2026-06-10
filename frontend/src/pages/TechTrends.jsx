@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { fetchGitHubTrending, fetchHackerNews, fetchDevToArticles } from '../api/trendApi';
+import { getBookmarks, addBookmark, removeBookmark } from '../api/bookmarkApi';
+import { AuthContext } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/TechTrends.css';
 
@@ -81,11 +83,13 @@ const langColor = {
 };
 
 export default function TechTrends() {
+    const { isLoggedIn } = useContext(AuthContext);
     const [activeTab, setActiveTab] = useState('github');
     const [isLoading, setIsLoading] = useState(true);
     const [lastUpdated, setLastUpdated] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [toast, setToast] = useState({ show: false, message: '', type: 'add' });
+    const [error, setError] = useState(null);
 
     // 필터 상태
     const [language, setLanguage] = useState('');
@@ -97,14 +101,16 @@ export default function TechTrends() {
     const [githubData, setGithubData] = useState(null);
     const [hnData, setHnData] = useState(null);
     const [devtoData, setDevtoData] = useState(null);
-    const [bookmarks, setBookmarks] = useState(() => {
-        const saved = localStorage.getItem('devlog_bookmarks');
-        return saved ? JSON.parse(saved) : [];
-    });
+    const [bookmarks, setBookmarks] = useState([]);
 
+    // 북마크 초기 로드 및 로그인 상태 변경 시 데이터 동기화
     useEffect(() => {
-        localStorage.setItem('devlog_bookmarks', JSON.stringify(bookmarks));
-    }, [bookmarks]);
+        if (isLoggedIn) {
+            fetchData('bookmarks');
+        } else {
+            setBookmarks([]);
+        }
+    }, [isLoggedIn]);
 
     const showToast = (message, type = 'add') => {
         setToast({ show: true, message, type });
@@ -112,13 +118,21 @@ export default function TechTrends() {
     };
 
     const fetchData = async (tab) => {
-        if (tab === 'bookmarks') {
-            setIsLoading(false);
-            return;
-        }
-
         setIsLoading(true);
+        setError(null);
+
         try {
+            if (tab === 'bookmarks') {
+                if (!isLoggedIn) {
+                    setIsLoading(false);
+                    return;
+                }
+                const data = await getBookmarks();
+                setBookmarks(data || []);
+                setIsLoading(false);
+                return;
+            }
+
             switch (tab) {
                 case 'github':
                     const repos = await fetchGitHubTrending(language, period);
@@ -136,6 +150,8 @@ export default function TechTrends() {
             setLastUpdated(new Date());
         } catch (err) {
             console.error('데이터 로딩 실패:', err);
+            setError(err.message || '데이터를 불러오는 중 오류가 발생했습니다.');
+            showToast(err.message || '로딩 실패', 'remove');
         } finally {
             setIsLoading(false);
         }
@@ -150,23 +166,44 @@ export default function TechTrends() {
         showToast('최신 데이터를 불러왔습니다!', 'info');
     };
 
-    const toggleBookmark = (e, item) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        setBookmarks(prev => {
-            const isExist = prev.find(b => b.id === item.id);
-            if (isExist) {
-                showToast('북마크에서 삭제되었습니다.', 'remove');
-                return prev.filter(b => b.id !== item.id);
-            } else {
-                showToast('북마크에 추가되었습니다!', 'add');
-                return [...prev, item];
-            }
+    const findBookmark = (type, originId) => {
+        return (bookmarks || []).find(b => {
+            const target = b.item || b;
+            const targetId = String(target.originId || target.id);
+            return target.type === type && targetId === String(originId);
         });
     };
 
-    const isBookmarked = (id) => bookmarks.some(b => b.id === id);
+    const isBookmarked = (type, originId) => !!findBookmark(type, originId);
+
+    const toggleBookmark = async (e, item) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!isLoggedIn) {
+            showToast('로그인이 필요한 서비스입니다.', 'info');
+            return;
+        }
+
+        const existingBookmark = findBookmark(item.type, String(item.id));
+
+        try {
+            if (existingBookmark) {
+                // 서버 PK(_dbId) 사용, 없으면 데이터 구조에 따라 id 사용
+                const deleteId = existingBookmark._dbId || existingBookmark.id;
+                await removeBookmark(deleteId);
+                setBookmarks(prev => prev.filter(b => (b._dbId || b.id) !== deleteId));
+                showToast('북마크에서 삭제되었습니다.', 'remove');
+            } else {
+                const savedData = await addBookmark(item);
+                setBookmarks(prev => [...prev, savedData]);
+                showToast('북마크에 추가되었습니다!', 'add');
+            }
+        } catch (err) {
+            console.error('Bookmark error:', err);
+            showToast('처리 중 오류가 발생했습니다.', 'remove');
+        }
+    };
 
     const getFilteredData = () => {
         let sourceData = [];
@@ -187,23 +224,50 @@ export default function TechTrends() {
 
     const currentData = getFilteredData();
 
-    // ─── Render Helpers ───────────────────────────────────
+    // ─── Unified Render Helpers ───────────────────────────
+
+    const renderCardActionOverlay = (item) => (
+        <div className="card-overlay">
+            <div className="overlay-content">
+                <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="overlay-btn visit"
+                    title="원본 사이트 방문"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    🔗
+                </a>
+                <button
+                    className={`overlay-btn bookmark ${isBookmarked(item.type, String(item.id)) ? 'active' : ''}`}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleBookmark(e, item);
+                    }}
+                    title="북마크 토글"
+                >
+                    ⭐
+                </button>
+            </div>
+        </div>
+    );
 
     const renderGithubCard = (repo, index) => (
         <div key={repo.id} className="trend-card github-card" style={{ animationDelay: `${index * 0.05}s` }}>
-            <div className="card-rank">#{index + 1}</div>
-            <button
-                className={`bookmark-toggle ${isBookmarked(repo.id) ? 'active' : ''}`}
-                onClick={(e) => toggleBookmark(e, repo)}
-            >⭐</button>
-            <a href={repo.url} target="_blank" rel="noreferrer" className="card-link-wrapper">
-                <div className="card-head">
-                    <img src={repo.owner.avatar} alt={repo.owner.name} className="owner-avatar" />
-                    <div className="repo-name">
-                        <span className="owner-name">{repo.owner.name}</span>
-                        <span className="slash">/</span>
-                        <span className="name">{repo.name.split('/')[1]}</span>
-                    </div>
+            <div className="card-image-wrap github-bg">
+                <div className={`source-badge github`}>GitHub</div>
+                {renderCardActionOverlay(repo)}
+                <div className="card-rank">#{index + 1}</div>
+                <img src={repo.owner.avatar} alt={repo.owner.name} className="github-avatar-large" />
+            </div>
+
+            <a href={repo.url} target="_blank" rel="noreferrer" className="card-body">
+                <div className="repo-name">
+                    <span className="owner-name">{repo.owner.name}</span>
+                    <span className="slash">/</span>
+                    <span className="name">{repo.name.split('/')[1] || repo.name}</span>
                 </div>
                 <p className="card-desc">{repo.description}</p>
                 <div className="card-meta">
@@ -212,7 +276,6 @@ export default function TechTrends() {
                         {repo.language}
                     </span>
                     <span className="meta-item">⭐ {formatNumber(repo.stars)}</span>
-                    <span className="meta-item">🍴 {formatNumber(repo.forks)}</span>
                 </div>
             </a>
         </div>
@@ -220,50 +283,104 @@ export default function TechTrends() {
 
     const renderHNCard = (story, index) => (
         <div key={story.id} className="trend-card hn-card" style={{ animationDelay: `${index * 0.03}s` }}>
-            <div className="hn-score">{story.score}</div>
-            <button
-                className={`bookmark-toggle ${isBookmarked(story.id) ? 'active' : ''}`}
-                onClick={(e) => toggleBookmark(e, story)}
-            >⭐</button>
-            <div className="hn-body">
+            <div className="card-image-wrap hn-bg">
+                <div className={`source-badge hackernews`}>HN</div>
+                {renderCardActionOverlay(story)}
+                <div className="hn-score-badge">+{story.score}</div>
+                <div className="hn-logo-box-large">Y</div>
+                <div className="hn-bg-pattern"></div>
+            </div>
+
+            <div className="card-body">
                 <a href={story.url} target="_blank" rel="noreferrer" className="hn-title">{story.title}</a>
+                <div className="hn-author-text">by <strong>{story.author}</strong></div>
                 <div className="hn-meta">
-                    <span>👤 {story.author}</span>
-                    <span>💬 {story.commentCount}개 댓글</span>
+                    <span>💬 {story.commentCount}</span>
                     <span>🕐 {timeAgo(story.time)}</span>
-                    <a href={story.hnUrl} target="_blank" rel="noreferrer" className="hn-discuss-link">HN에서 보기 →</a>
                 </div>
+                <a href={story.hnUrl} target="_blank" rel="noreferrer" className="hn-discuss-link">Join Discussion →</a>
             </div>
         </div>
     );
 
     const renderDevToCard = (article, index) => (
         <div key={article.id} className="trend-card devto-card" style={{ animationDelay: `${index * 0.05}s` }}>
-            <button
-                className={`bookmark-toggle floating ${isBookmarked(article.id) ? 'active' : ''}`}
-                onClick={(e) => toggleBookmark(e, article)}
-            >⭐</button>
-            <a href={article.url} target="_blank" rel="noreferrer" className="card-link-wrapper">
-                {article.coverImage && (
-                    <div className="devto-cover"><img src={article.coverImage} alt={article.title} /></div>
+            <div className="card-image-wrap">
+                <div className={`source-badge devto`}>Dev.to</div>
+                {renderCardActionOverlay(article)}
+                {article.coverImage ? (
+                    <img src={article.coverImage} alt={article.title} className="devto-cover-img" />
+                ) : (
+                    <div className="devto-placeholder-bg">
+                        <span className="devto-icon-large">✍️</span>
+                    </div>
                 )}
-                <div className="devto-body">
-                    <div className="devto-author">
-                        <img src={article.author.avatar} alt={article.author.name} className="devto-avatar" />
-                        <span>{article.author.name}</span>
-                    </div>
-                    <h3 className="devto-title">{article.title}</h3>
-                    <div className="devto-tags">
-                        {article.tags.slice(0, 3).map(tag => <span key={tag} className="devto-tag">#{tag}</span>)}
-                    </div>
-                    <div className="devto-stats">
-                        <span>❤️ {article.reactions}</span>
-                        <span>💬 {article.comments}</span>
-                    </div>
+            </div>
+
+            <div className="card-body">
+                <div className="devto-author">
+                    <img src={article.author.avatar} alt={article.author.name} className="devto-avatar" />
+                    <span>{article.author.name}</span>
                 </div>
-            </a>
+                <a href={article.url} target="_blank" rel="noreferrer" className="devto-title">{article.title}</a>
+                <div className="devto-tags">
+                    {article.tags.slice(0, 3).map(tag => <span key={tag} className="devto-tag">#{tag}</span>)}
+                </div>
+                <div className="devto-stats">
+                    <span>❤️ {article.reactions}</span>
+                    <span>💬 {article.comments}</span>
+                </div>
+            </div>
         </div>
     );
+
+    const renderTrendContent = () => {
+        const data = currentData;
+
+        if (isLoading) {
+            return (
+                <div className="loading-container">
+                    <LoadingSpinner />
+                    <p>Trends를 불러오는 중...</p>
+                </div>
+            );
+        }
+
+        if (error) {
+            return (
+                <div className="error-state">
+                    <span className="error-icon">⚠️</span>
+                    <h3>데이터 로드 실패</h3>
+                    <p>{error}</p>
+                    <button className="retry-btn" onClick={() => fetchData(activeTab)}>다시 시도</button>
+                </div>
+            );
+        }
+
+        if (data.length === 0) {
+            return (
+                <div className="empty-state">
+                    <p>{searchTerm ? "검색 결과가 없습니다." : activeTab === 'bookmarks' ? "저장된 북마크가 없습니다." : "표시할 데이터가 없습니다."}</p>
+                </div>
+            );
+        }
+
+        return (
+            <div className="trend-grid">
+                {data.map((item, index) => {
+                    if (item.type === 'github') return renderGithubCard(item, index);
+                    if (item.type === 'hackernews') return renderHNCard(item, index);
+                    if (item.type === 'devto') return renderDevToCard(item, index);
+                    return (
+                        <div key={index} className="trend-card unknown-card">
+                            <h3>{item.title || 'Unknown Title'}</h3>
+                            <p>Type: {item.type}</p>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
 
     return (
         <div className="trends-container">
@@ -332,25 +449,7 @@ export default function TechTrends() {
             </div>
 
             <div className="trends-content">
-                {isLoading ? (
-                    <LoadingSpinner message="트렌드 수집 중..." />
-                ) : currentData.length === 0 ? (
-                    <div className="empty-state">
-                        <p>{searchTerm ? "검색 결과가 없습니다." : activeTab === 'bookmarks' ? "저장된 북마크가 없습니다." : "데이터를 찾을 수 없습니다."}</p>
-                    </div>
-                ) : (
-                    <div className={activeTab === 'hackernews' ? "hn-list" : "trend-grid"}>
-                        {currentData.map((item, index) => {
-                            if (activeTab === 'github' || (activeTab === 'bookmarks' && item.type === 'github'))
-                                return renderGithubCard(item, index);
-                            if (activeTab === 'hackernews' || (activeTab === 'bookmarks' && item.type === 'hackernews'))
-                                return renderHNCard(item, index);
-                            if (activeTab === 'devto' || (activeTab === 'bookmarks' && item.type === 'devto'))
-                                return renderDevToCard(item, index);
-                            return null;
-                        })}
-                    </div>
-                )}
+                {renderTrendContent()}
             </div>
 
             {/* Toast Notification */}
