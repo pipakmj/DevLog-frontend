@@ -19,7 +19,7 @@ export const fetchGitHubTrending = async (language = '', since = 'week') => {
 
         // 검색 쿼리 구성: 특정 날짜 이후 생성된 저장소 중 별점 높은 순
         let query = `created:>${dateStr}`;
-        if (language) query += `+language:${language}`;
+        if (language) query += `+language:${encodeURIComponent(language)}`;
 
         const url = `https://api.github.com/search/repositories?q=${query}&sort=stars&order=desc&per_page=20`;
 
@@ -100,7 +100,7 @@ export const fetchHackerNews = async (category = 'top') => {
 // ─── Dev.to Articles ───────────────────────────────────
 export const fetchDevToArticles = async (tag = '') => {
     try {
-        const query = tag ? `tag=${tag}` : 'top=7';
+        const query = tag ? `tag=${encodeURIComponent(tag)}` : 'top=7';
         const res = await fetch(`https://dev.to/api/articles?${query}`);
 
         if (!res.ok) {

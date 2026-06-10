@@ -40,7 +40,7 @@ export const getBookmarks = async () => {
         return list.map(processBookmarkItem).filter(item => item !== null);
     } catch (error) {
         console.error("북마크 로드 실패:", error);
-        return [];
+        throw error;
     }
 };
 

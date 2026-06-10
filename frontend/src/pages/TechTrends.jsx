@@ -134,18 +134,21 @@ export default function TechTrends() {
             }
 
             switch (tab) {
-                case 'github':
+                case 'github': {
                     const repos = await fetchGitHubTrending(language, period);
                     setGithubData(repos);
                     break;
-                case 'hackernews':
+                }
+                case 'hackernews': {
                     const stories = await fetchHackerNews(hnCategory);
                     setHnData(stories);
                     break;
-                case 'devto':
+                }
+                case 'devto': {
                     const articles = await fetchDevToArticles(devtoTag);
                     setDevtoData(articles);
                     break;
+                }
             }
             setLastUpdated(new Date());
         } catch (err) {
