@@ -13,8 +13,9 @@ import PostDetail from "../pages/PostDetail";
 import ProtectedRoute from "../components/ProtectedRoute";
 import FindPassword from "../pages/FindPassword";
 import ResetPassword from "../pages/ResetPassword";
-import Terms from "../pages/Terms";
-import TechTrends from "../pages/TechTrends";
+import Terms from '../pages/Terms.jsx';
+import TechTrends from '../pages/TechTrends.jsx';
+import PortfolioBuilder from '../pages/PortfolioBuilder.jsx';
 
 export const router = createBrowserRouter([
     {
@@ -60,6 +61,10 @@ export const router = createBrowserRouter([
             {
                 path: "/project/edit/:projectId",
                 element: <ProtectedRoute><ProjectForm /></ProtectedRoute>
+            },
+            {
+                path: "/portfolio/builder",
+                element: <ProtectedRoute><PortfolioBuilder /></ProtectedRoute>
             },
             {
                 path: "/posts",
