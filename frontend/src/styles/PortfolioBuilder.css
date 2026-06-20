@@ -805,9 +805,13 @@ button {
 }
 
 .pdf-grid-layout {
-    display: flex;
+    flex: 1;
     flex-direction: column;
     gap: 26px;
+}
+
+.pdf-section {
+    padding: 24px 12px;
 }
 
 .pdf-section h2 {

@@ -556,7 +556,7 @@ const PortfolioBuilder = () => {
                                             <div key={idx} className="ui-image-editor">
                                                 <div className="upload-area has-image">
                                                     <div className="image-preview">
-                                                                        <img src={imageItem.src} alt={`UI screen ${idx + 1}`} />
+                                                        <img src={imageItem.src} alt={`UI screen ${idx + 1}`} />
                                                         <button className="btn-remove-image" type="button" onClick={() => setUiImgs((prev) => prev.filter((_, i) => i !== idx))} disabled={isDisabled}>
                                                             &times;
                                                         </button>
@@ -679,13 +679,13 @@ const PortfolioBuilder = () => {
 
                                                 <section className="pdf-section">
                                                     <h2><span>03</span> Technology Stack</h2>
-                                                        <ul className="pdf-tech-list">
-                                                            {selectedTechs.map((tech) => (
-                                                                <li key={tech} className="pdf-tech-item">
-                                                                    {tech}
-                                                                </li>
-                                                            ))}
-                                                        </ul>
+                                                    <ul className="pdf-tech-list">
+                                                        {selectedTechs.map((tech) => (
+                                                            <li key={tech} className="pdf-tech-item">
+                                                                {tech}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
                                                 </section>
 
                                                 {features.length > 0 && (
@@ -702,9 +702,49 @@ const PortfolioBuilder = () => {
                                                     </section>
                                                 )}
 
+                                                {architectureImg.src && (
+                                                    <section className="pdf-section">
+                                                        <h2><span>05</span> System Architecture <em>{'\uc2dc\uc2a4\ud15c \uc544\ud0a4\ud14d\ucc98'}</em></h2>
+                                                        <div className="pdf-image-block full">
+                                                            <div className="pdf-img-wrapper">
+                                                                <img src={architectureImg.src} alt="Architecture" />
+                                                            </div>
+                                                            {architectureImg.description && <p className="pdf-image-description">{architectureImg.description}</p>}
+                                                        </div>
+                                                    </section>
+                                                )}
+
+                                                {erdImg.src && (
+                                                    <section className="pdf-section">
+                                                        <h2><span>06</span> Database ERD <em>{'\ub370\uc774\ud130\ubca0\uc774\uc2a4 ERD'}</em></h2>
+                                                        <div className="pdf-image-block full">
+                                                            <div className="pdf-img-wrapper">
+                                                                <img src={erdImg.src} alt="Database ERD" />
+                                                            </div>
+                                                            {erdImg.description && <p className="pdf-image-description">{erdImg.description}</p>}
+                                                        </div>
+                                                    </section>
+                                                )}
+
+                                                {uiImgs.length > 0 && (
+                                                    <section className="pdf-section">
+                                                        <h2><span>07</span> User Interface <em>{'\uc8fc\uc694 UI \ud654\uba74'}</em></h2>
+                                                        <div className="pdf-images-grid">
+                                                            {uiImgs.map((imageItem, idx) => (
+                                                                <div key={idx} className="pdf-image-block">
+                                                                    <div className="pdf-img-wrapper">
+                                                                        <img src={imageItem.src} alt={`UI screen ${idx + 1}`} />
+                                                                    </div>
+                                                                    {imageItem.description && <p className="pdf-image-description">{imageItem.description}</p>}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </section>
+                                                )}
+
                                                 {troubleshoots.length > 0 && (
                                                     <section className="pdf-section">
-                                                        <h2><span>05</span> Troubleshooting <em>{'\ubb38\uc81c \ud574\uacb0'}</em></h2>
+                                                        <h2><span>08</span> Troubleshooting <em>{'\ubb38\uc81c \ud574\uacb0'}</em></h2>
                                                         <div className="pdf-troubleshoot-list">
                                                             {troubleshoots.map((item, idx) => (
                                                                 <div key={idx} className="pdf-item-card ts-card">
@@ -724,44 +764,9 @@ const PortfolioBuilder = () => {
 
                                                 {metrics && (
                                                     <section className="pdf-section">
-                                                        <h2><span>06</span> Outcomes &amp; Metrics <em>{'\uc131\uacfc \ubc0f \uc9c0\ud45c'}</em></h2>
+                                                        <h2><span>09</span> Outcomes &amp; Metrics <em>{'\uc131\uacfc \ubc0f \uc9c0\ud45c'}</em></h2>
                                                         <div className="pdf-box">
                                                             <p className="pdf-text">{metrics}</p>
-                                                        </div>
-                                                    </section>
-                                                )}
-
-                                                {(architectureImg.src || erdImg.src || uiImgs.length > 0) && (
-                                                    <section className="pdf-section pdf-visuals">
-                                                        <h2><span>07</span> Architecture &amp; Interface <em>{'\uc2dc\uac01 \uc790\ub8cc'}</em></h2>
-                                                        <div className="pdf-images-grid">
-                                                            {architectureImg.src && (
-                                                                <div className="pdf-image-block full">
-                                                                    <h4>{'\uc2dc\uc2a4\ud15c \uc544\ud0a4\ud14d\ucc98'}</h4>
-                                                                    <div className="pdf-img-wrapper">
-                                                                        <img src={architectureImg.src} alt="Architecture" />
-                                                                    </div>
-                                                                    {architectureImg.description && <p className="pdf-image-description">{architectureImg.description}</p>}
-                                                                </div>
-                                                            )}
-                                                            {erdImg.src && (
-                                                                <div className="pdf-image-block">
-                                                                    <h4>{'\ub370\uc774\ud130\ubca0\uc774\uc2a4 ERD'}</h4>
-                                                                    <div className="pdf-img-wrapper">
-                                                                        <img src={erdImg.src} alt="Database ERD" />
-                                                                    </div>
-                                                                    {erdImg.description && <p className="pdf-image-description">{erdImg.description}</p>}
-                                                                </div>
-                                                            )}
-                                                            {uiImgs.map((imageItem, idx) => (
-                                                                <div key={idx} className="pdf-image-block">
-                                                                    <h4>{'\uc8fc\uc694 UI \ud654\uba74'} {uiImgs.length > 1 ? `(${idx + 1})` : ''}</h4>
-                                                                    <div className="pdf-img-wrapper">
-                                                                        <img src={imageItem.src} alt={`UI screen ${idx + 1}`} />
-                                                                    </div>
-                                                                    {imageItem.description && <p className="pdf-image-description">{imageItem.description}</p>}
-                                                                </div>
-                                                            ))}
                                                         </div>
                                                     </section>
                                                 )}
