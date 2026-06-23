@@ -39,6 +39,7 @@
 
 .portfolio-builder-container {
     display: flex;
+    /* align-items: stretch by default - necessary for sidebar to have height */
     gap: 32px;
     max-width: 1280px;
     margin: 0 auto;
@@ -554,13 +555,126 @@ button {
 .portfolio-sidebar {
     width: 320px;
     min-width: 320px;
-    animation: slideUpEntrance 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s both;
+    scroll-margin-top: 100px;
+    /* Removed transform animation as it breaks position: sticky on children */
+    animation: sidebarFadeIn 0.8s ease-out 0.3s both;
+}
+
+@keyframes sidebarFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .ai-feedback-panel {
     padding: 32px 24px;
     position: sticky;
-    top: 40px;
+    top: 100px;
+    /* Stay below the navbar */
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    transition: all 0.3s ease;
+}
+
+/* AI Score Circular UI */
+.ai-score-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.ai-score-circle {
+    width: 140px;
+    height: 140px;
+}
+
+.circular-chart {
+    display: block;
+    margin: 10px auto;
+    max-width: 100%;
+    max-height: 250px;
+}
+
+.circle-bg {
+    fill: none;
+    stroke: #f1f5f9;
+    stroke-width: 2.8;
+}
+
+.circle {
+    fill: none;
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    transition: stroke-dasharray 1s ease-in-out;
+}
+
+.circle.high {
+    stroke: #4f46e5;
+}
+
+.circle.medium {
+    stroke: #f59e0b;
+}
+
+.percentage {
+    fill: #0f172a;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.55rem;
+    font-weight: 800;
+    text-anchor: middle;
+}
+
+.ai-score-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    margin-top: 8px;
+}
+
+.ai-success-toast {
+    background: #4f46e5;
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+    animation: fadeInDownPulse 0.4s ease-out;
+}
+
+@keyframes fadeInDownPulse {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    70% {
+        transform: translateY(2px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom scrollbar for sticky panel if it overflows */
+.ai-feedback-panel::-webkit-scrollbar {
+    width: 4px;
+}
+
+.ai-feedback-panel::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
 }
 
 .feedback-header {

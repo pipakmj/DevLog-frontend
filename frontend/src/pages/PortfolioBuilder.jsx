@@ -46,6 +46,7 @@ const normalizeTechStack = (techStack = []) => {
 const getResponseData = (response) => response?.data?.data ?? response?.data;
 
 const PortfolioBuilder = () => {
+    const sidebarRef = React.useRef(null);
     const [projects, setProjects] = useState([]);
     const [selectedProjectId, setSelectedProjectId] = useState('');
     const [portfolioId, setPortfolioId] = useState(null);
@@ -61,6 +62,8 @@ const PortfolioBuilder = () => {
     const [erdImg, setErdImg] = useState(createImageItem());
     const [uiImgs, setUiImgs] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
+    const [aiScore, setAiScore] = useState(null);
+    const [showAiSuccess, setShowAiSuccess] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -322,6 +325,9 @@ const PortfolioBuilder = () => {
         try {
             const response = await getPortfolioAiFeedback(buildPortfolioPayload('DRAFT'));
             const data = getResponseData(response);
+
+            // 스코어 및 제안 업데이트
+            if (data?.score !== undefined) setAiScore(data.score);
             const autoCompletedFields = data?.autoCompletedFields || {};
             if (autoCompletedFields.metrics && !metrics.trim()) setMetrics(autoCompletedFields.metrics);
             if (Array.isArray(autoCompletedFields.troubleshoots) && autoCompletedFields.troubleshoots.length > 0) {
@@ -332,6 +338,12 @@ const PortfolioBuilder = () => {
             alert(error.response?.data?.message || 'AI 피드백을 불러오지 못했습니다.');
         } finally {
             setIsGenerating(false);
+            setShowAiSuccess(true);
+            setTimeout(() => setShowAiSuccess(false), 3000);
+            // AI 알림 및 사이드바 상단 이동
+            if (sidebarRef.current) {
+                sidebarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
     };
 
@@ -640,8 +652,35 @@ const PortfolioBuilder = () => {
                         </section>
                     </main>
 
-                    <aside className="portfolio-sidebar">
+                    <aside className="portfolio-sidebar" ref={sidebarRef}>
                         <div className="ai-feedback-panel glass-panel">
+                            {aiScore !== null && (
+                                <div className="ai-score-container">
+                                    <div className="ai-score-circle">
+                                        <svg viewBox="0 0 36 36" className="circular-chart">
+                                            <path className="circle-bg"
+                                                d="M18 2.0845
+                                                a 15.9155 15.9155 0 0 1 0 31.831
+                                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            />
+                                            <path className={`circle ${aiScore > 70 ? 'high' : 'medium'}`}
+                                                strokeDasharray={`${aiScore}, 100`}
+                                                d="M18 2.0845
+                                                a 15.9155 15.9155 0 0 1 0 31.831
+                                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            />
+                                            <text x="18" y="20.35" className="percentage">{aiScore}%</text>
+                                        </svg>
+                                    </div>
+                                    <div className="ai-score-label">CONTENT QUALITY</div>
+                                </div>
+                            )}
+
+                            {showAiSuccess && (
+                                <div className="ai-success-toast">
+                                    ✨ AI 진단 및 보완이 완료되었습니다!
+                                </div>
+                            )}
                             <div className="feedback-header">
                                 <div className="ai-icon">✓</div>
                                 <h3>누락 항목 체크리스트</h3>
