@@ -66,7 +66,8 @@ function ProjectList() {
                 <p>지금까지 진행한 프로젝트의 히스토리와 실시간 현황입니다.</p>
 
                 <div className='list-actions'>
-                    <button onClick={handleAddProject} className='add-project-btn' style={{ cursor: 'pointer', border: 'none' }}>프로젝트 등록</button>
+                    <button onClick={() => navigate("/portfolio/builder")} className='portfolio-builder-btn'>포트폴리오 생성</button>
+                    <button onClick={handleAddProject} className='add-project-btn'>프로젝트 등록</button>
                 </div>
             </header>
 

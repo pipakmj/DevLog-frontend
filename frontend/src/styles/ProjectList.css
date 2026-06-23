@@ -56,6 +56,27 @@
     box-shadow: 0 8px 20px rgba(59, 130, 246, 0.6);
 }
 
+.portfolio-builder-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #818cf8, #a78bfa);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    margin-right: 12px;
+    border: none;
+    cursor: pointer;
+}
+
+.portfolio-builder-btn:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, #a78bfa, #c084fc);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+}
+
 /* 프로젝트 그리드 레이아웃 */
 .project-grid {
     display: grid;

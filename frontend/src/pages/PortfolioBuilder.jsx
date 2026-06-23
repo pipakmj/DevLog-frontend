@@ -68,6 +68,11 @@ const PortfolioBuilder = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
 
+    // 요약 정보 상태 (직접 수정 가능)
+    const [projectPeriod, setProjectPeriod] = useState('');
+    const [teamSize, setTeamSize] = useState('');
+    const [primaryRole, setPrimaryRole] = useState('');
+
     useEffect(() => {
         const fetchProjects = async () => {
             try {
@@ -96,7 +101,7 @@ const PortfolioBuilder = () => {
         const fetchPortfolio = async () => {
             setIsLoading(true);
             try {
-                const selectedProject = projects.find((project) => String(project.projectId) === String(selectedProjectId));
+                const selectedProject = projects.find((p) => String(p.projectId) === String(selectedProjectId));
                 const response = await getProjectPortfolio(selectedProjectId);
                 const data = getResponseData(response);
                 const portfolio = data?.portfolio || data;
@@ -113,9 +118,17 @@ const PortfolioBuilder = () => {
                 setArchitectureImg(normalizeImageItem(portfolio?.images?.architecture));
                 setErdImg(normalizeImageItem(portfolio?.images?.erd));
                 setUiImgs((portfolio?.images?.ui || []).map(normalizeImageItem));
+
+                // 요약 정보 세팅 (저장된 정보 우선, 없으면 프로젝트 기본 정보 사용)
+                setProjectPeriod(portfolio?.projectPeriod || (selectedProject?.startDate || selectedProject?.endDate
+                    ? `${selectedProject?.startDate || ''} - ${selectedProject?.endDate || ''}`
+                    : ''));
+                setTeamSize(portfolio?.teamSize || selectedProject?.teamSize || selectedProject?.developerCount || '');
+                setPrimaryRole(portfolio?.primaryRole || selectedProject?.myRole || '');
+
                 setSuggestions([]);
             } catch (error) {
-                const selectedProject = projects.find((project) => String(project.projectId) === String(selectedProjectId));
+                const selectedProject = projects.find((p) => String(p.projectId) === String(selectedProjectId));
                 setPortfolioId(selectedProject?.portfolioId || null);
                 setProjectName(selectedProject?.projectName || '');
                 setTechStack(normalizeTechStack(selectedProject?.techStack || []));
@@ -127,6 +140,9 @@ const PortfolioBuilder = () => {
                 setArchitectureImg(createImageItem());
                 setErdImg(createImageItem());
                 setUiImgs([]);
+                setProjectPeriod('');
+                setTeamSize('');
+                setPrimaryRole('');
                 setSuggestions([]);
 
                 const message = error.response?.data?.message || '선택한 프로젝트의 포트폴리오 정보를 불러오지 못했습니다.';
@@ -144,13 +160,36 @@ const PortfolioBuilder = () => {
         [techStack]
     );
 
+    const generatedDate = new Date().toLocaleDateString('ko-KR');
+    const pdfTotalPages = 1 + [
+        overview.trim(),
+        roles.trim(),
+        selectedTechs.length > 0,
+        features.length > 0,
+        architectureImg.src,
+        erdImg.src,
+        uiImgs.length > 0,
+        troubleshoots.length > 0,
+        metrics.trim()
+    ].filter(Boolean).length;
+
+    const summaryItems = [
+        { label: '프로젝트 기간', value: projectPeriod || '미입력' },
+        { label: '개발 인원', value: teamSize || '미입력' },
+        { label: '담당 역할', value: primaryRole || '미입력' },
+        { label: '기술 스택', value: selectedTechs.length > 0 ? selectedTechs.join(', ') : '기술 스택 미입력' }
+    ];
+
     const buildPortfolioPayload = (status = 'DRAFT') => ({
         projectId: Number(selectedProjectId),
         overview,
         roles,
+        projectPeriod,
+        teamSize,
+        primaryRole,
         techStack: selectedTechs,
-        features: features.filter((feature) => feature.title.trim() || feature.description.trim()),
-        troubleshoots: troubleshoots.filter((item) => item.issue.trim() || item.resolution.trim()),
+        features: features.filter((f) => f.title.trim() || f.description.trim()),
+        troubleshoots: troubleshoots.filter((t) => t.issue.trim() || t.resolution.trim()),
         metrics,
         images: {
             architecture: {
@@ -161,9 +200,9 @@ const PortfolioBuilder = () => {
                 imageUrl: erdImg.src,
                 description: erdImg.description
             },
-            ui: uiImgs.map((item) => ({
-                imageUrl: item.src,
-                description: item.description
+            ui: uiImgs.map((img) => ({
+                imageUrl: img.src,
+                description: img.description
             }))
         },
         status
@@ -174,8 +213,8 @@ const PortfolioBuilder = () => {
         if (!overview.trim()) missing.push('overview');
         if (!roles.trim()) missing.push('roles');
         if (selectedTechs.length === 0) missing.push('tech');
-        if (features.length === 0 || !features.some((feature) => feature.title.trim())) missing.push('features');
-        if (troubleshoots.length === 0 || !troubleshoots.some((item) => item.issue.trim())) missing.push('troubleshoots');
+        if (features.length === 0 || !features.some((f) => f.title.trim())) missing.push('features');
+        if (troubleshoots.length === 0 || !troubleshoots.some((t) => t.issue.trim())) missing.push('troubleshoots');
         if (!metrics.trim()) missing.push('metrics');
         return missing;
     };
@@ -189,22 +228,19 @@ const PortfolioBuilder = () => {
     const handleAddCustomTech = () => {
         const techName = normalizeTechName(newTechName);
         if (!techName) return;
-
         setTechStack((prev) => {
-            const existingTech = Object.keys(prev).find((tech) => tech.toLowerCase() === techName.toLowerCase());
-            if (existingTech) {
-                return { ...prev, [existingTech]: true };
-            }
-
+            const existingTech = Object.keys(prev).find((t) => t.toLowerCase() === techName.toLowerCase());
+            if (existingTech) return { ...prev, [existingTech]: true };
             return { ...prev, [techName]: true };
         });
         setNewTechName('');
     };
 
     const handleTechInputKeyDown = (e) => {
-        if (e.key !== 'Enter') return;
-        e.preventDefault();
-        handleAddCustomTech();
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAddCustomTech();
+        }
     };
 
     const handleAddFeature = () => setFeatures((prev) => [...prev, { title: '', description: '' }]);
@@ -222,7 +258,6 @@ const PortfolioBuilder = () => {
     const handleSingleImageUpload = (setter) => async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
         setIsUploading(true);
         try {
             const imageUrl = await uploadImage(file);
@@ -238,11 +273,10 @@ const PortfolioBuilder = () => {
     const handleMultipleImageUpload = async (e) => {
         const files = Array.from(e.target.files || []);
         if (files.length === 0) return;
-
         setIsUploading(true);
         try {
             const imageUrls = await Promise.all(files.map((file) => uploadImage(file)));
-            setUiImgs((prev) => [...prev, ...imageUrls.map((imageUrl) => createImageItem(imageUrl))]);
+            setUiImgs((prev) => [...prev, ...imageUrls.map((url) => createImageItem(url))]);
         } catch {
             alert('이미지 업로드에 실패했습니다.');
         } finally {
@@ -260,12 +294,10 @@ const PortfolioBuilder = () => {
             alert('프로젝트를 먼저 선택해주세요.');
             return null;
         }
-
         if (status === 'COMPLETED' && !isReadyForPreview) {
             alert('완료 저장을 위해 필수 항목을 모두 입력해주세요.');
             return null;
         }
-
         setIsSaving(true);
         try {
             const payload = buildPortfolioPayload(status);
@@ -274,13 +306,11 @@ const PortfolioBuilder = () => {
                 : await createPortfolio(payload);
             const data = getResponseData(response);
             const savedPortfolioId = data?.portfolioId || data?.id || portfolioId;
-
             setPortfolioId(savedPortfolioId);
             alert(status === 'COMPLETED' ? '포트폴리오가 저장되었습니다.' : '임시저장되었습니다.');
             return savedPortfolioId;
         } catch (error) {
-            const message = error.response?.data?.message || '포트폴리오 저장에 실패했습니다.';
-            alert(message);
+            alert(error.response?.data?.message || '포트폴리오 저장에 실패했습니다.');
             return null;
         } finally {
             setIsSaving(false);
@@ -293,19 +323,13 @@ const PortfolioBuilder = () => {
             const response = await getPortfolioAiFeedback(buildPortfolioPayload('DRAFT'));
             const data = getResponseData(response);
             const autoCompletedFields = data?.autoCompletedFields || {};
-
-            if (autoCompletedFields.metrics && !metrics.trim()) {
-                setMetrics(autoCompletedFields.metrics);
-            }
+            if (autoCompletedFields.metrics && !metrics.trim()) setMetrics(autoCompletedFields.metrics);
             if (Array.isArray(autoCompletedFields.troubleshoots) && autoCompletedFields.troubleshoots.length > 0) {
                 setTroubleshoots((prev) => (prev.length > 0 ? prev : autoCompletedFields.troubleshoots));
             }
-            if (Array.isArray(data?.suggestions)) {
-                setSuggestions(data.suggestions);
-            }
+            if (Array.isArray(data?.suggestions)) setSuggestions(data.suggestions);
         } catch (error) {
-            const message = error.response?.data?.message || 'AI 피드백을 불러오지 못했습니다.';
-            alert(message);
+            alert(error.response?.data?.message || 'AI 피드백을 불러오지 못했습니다.');
         } finally {
             setIsGenerating(false);
         }
@@ -314,12 +338,10 @@ const PortfolioBuilder = () => {
     const handleShare = async () => {
         const savedPortfolioId = portfolioId || await persistPortfolio('COMPLETED');
         if (!savedPortfolioId) return;
-
         try {
             const response = await createPortfolioShareLink(savedPortfolioId, true);
             const data = getResponseData(response);
             const shareUrl = data?.shareUrl;
-
             if (shareUrl) {
                 await navigator.clipboard?.writeText(shareUrl);
                 alert('공유 링크가 생성되어 클립보드에 복사되었습니다.');
@@ -327,15 +349,13 @@ const PortfolioBuilder = () => {
                 alert('공유 링크가 생성되었습니다.');
             }
         } catch (error) {
-            const message = error.response?.data?.message || '공유 링크 생성에 실패했습니다.';
-            alert(message);
+            alert(error.response?.data?.message || '공유 링크 생성에 실패했습니다.');
         }
     };
 
     const handleGeneratePDF = async () => {
         const savedPortfolioId = portfolioId || await persistPortfolio('COMPLETED');
         if (!savedPortfolioId) return;
-
         setIsDownloading(true);
         try {
             const fileName = `${projectName || 'portfolio'}-portfolio.pdf`;
@@ -343,7 +363,6 @@ const PortfolioBuilder = () => {
             const blob = new Blob([response.data], { type: 'application/pdf' });
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
-
             link.href = url;
             link.download = fileName;
             document.body.appendChild(link);
@@ -351,8 +370,7 @@ const PortfolioBuilder = () => {
             link.remove();
             window.URL.revokeObjectURL(url);
         } catch (error) {
-            const message = error.response?.data?.message || 'PDF 다운로드에 실패했습니다.';
-            alert(message);
+            alert(error.response?.data?.message || 'PDF 다운로드에 실패했습니다.');
         } finally {
             setIsDownloading(false);
         }
@@ -363,7 +381,6 @@ const PortfolioBuilder = () => {
             const shouldContinue = window.confirm('필수 항목이 누락되어 있습니다. 그래도 미리보기를 진행하시겠습니까?');
             if (!shouldContinue) return;
         }
-
         try {
             await createPortfolioPreview({
                 ...buildPortfolioPayload(isReadyForPreview ? 'COMPLETED' : 'DRAFT'),
@@ -371,7 +388,7 @@ const PortfolioBuilder = () => {
                 projectName
             });
         } catch {
-            // 미리보기 정규화 API가 실패해도 현재 입력값으로 프론트 미리보기는 계속 제공한다.
+            // 미리보기 정규화 실패 시에도 모달은 연다
         } finally {
             setIsPreviewOpen(true);
         }
@@ -428,14 +445,54 @@ const PortfolioBuilder = () => {
                                         {projects.length === 0 ? (
                                             <option value="">등록된 프로젝트가 없습니다.</option>
                                         ) : (
-                                            projects.map((project) => (
-                                                <option key={project.projectId} value={project.projectId}>
-                                                    {project.projectName}
+                                            projects.map((p) => (
+                                                <option key={p.projectId} value={p.projectId}>
+                                                    {p.projectName}
                                                 </option>
                                             ))
                                         )}
                                     </select>
                                 </div>
+                            </div>
+
+                            <div className="form-divider" />
+
+                            {/* 신규: 요약 정보 입력 섹션 */}
+                            <div className="form-group meta-summary-section">
+                                <label className="section-label">포트폴리오 요약 정보 (표지용)</label>
+                                <div className="meta-input-grid">
+                                    <div className="meta-input-item">
+                                        <span className="tiny-label">프로젝트 기간</span>
+                                        <input
+                                            type="text"
+                                            className="form-input-text"
+                                            value={projectPeriod}
+                                            onChange={(e) => setProjectPeriod(e.target.value)}
+                                            placeholder="예: 2026.01 - 2026.06"
+                                        />
+                                    </div>
+                                    <div className="meta-input-item">
+                                        <span className="tiny-label">개발 인원</span>
+                                        <input
+                                            type="text"
+                                            className="form-input-text"
+                                            value={teamSize}
+                                            onChange={(e) => setTeamSize(e.target.value)}
+                                            placeholder="예: 3명 (프론트 1, 백엔드 2)"
+                                        />
+                                    </div>
+                                    <div className="meta-input-item">
+                                        <span className="tiny-label">대표 역할</span>
+                                        <input
+                                            type="text"
+                                            className="form-input-text"
+                                            value={primaryRole}
+                                            onChange={(e) => setPrimaryRole(e.target.value)}
+                                            placeholder="예: Lead Backend Developer"
+                                        />
+                                    </div>
+                                </div>
+                                <p className="meta-help-text">이 정보는 PDF 보고서의 첫 페이지 요약 카드에 표시됩니다.</p>
                             </div>
 
                             <div className="form-divider" />
@@ -476,12 +533,7 @@ const PortfolioBuilder = () => {
                                         placeholder="포트폴리오에 추가할 기술을 입력하세요. 예: Next.js"
                                         disabled={isDisabled}
                                     />
-                                    <button
-                                        className="btn-add-tech"
-                                        type="button"
-                                        onClick={handleAddCustomTech}
-                                        disabled={isDisabled || !normalizeTechName(newTechName)}
-                                    >
+                                    <button className="btn-add-tech" type="button" onClick={handleAddCustomTech} disabled={isDisabled || !normalizeTechName(newTechName)}>
                                         추가
                                     </button>
                                 </div>
@@ -650,35 +702,66 @@ const PortfolioBuilder = () => {
                                 <div className="preview-modal-content">
                                     <div className="pdf-preview-canvas" id="pdf-content">
                                         <div className="pdf-inner">
-                                            <header className="pdf-header">
-                                                <div className="pdf-header-left">
-                                                    <p className="pdf-kicker">DevLog Portfolio</p>
-                                                    <h1>{projectName || 'Project Name'}</h1>
-                                                    <p className="pdf-subtitle">Project Portfolio Report</p>
-                                                </div>
-                                                <div className="pdf-meta">
-                                                    <span>Date</span>
-                                                    <strong>{new Date().toLocaleDateString('ko-KR')}</strong>
-                                                </div>
-                                            </header>
+                                            <div className="pdf-page-header">
+                                                <span>DevLog Portfolio</span>
+                                                <strong>{projectName || 'Project Name'}</strong>
+                                            </div>
 
                                             <div className="pdf-grid-layout">
+                                                <section className="pdf-cover-section">
+                                                    <p className="pdf-kicker">DevLog Portfolio</p>
+                                                    <h1>{projectName || 'Project Name'}</h1>
+                                                    <p className="pdf-subtitle">Project Portfolio Report · {generatedDate}</p>
+
+                                                    <div className="pdf-summary-grid">
+                                                        {summaryItems.map((item) => (
+                                                            <div className="pdf-summary-card" key={item.label}>
+                                                                <span>{item.label}</span>
+                                                                <strong>{item.value}</strong>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+
+                                                    <div className="pdf-cover-overview">
+                                                        <span>Executive Snapshot</span>
+                                                        <p>{overview || '프로젝트 개요가 입력되면 첫 페이지 요약에 함께 표시됩니다.'}</p>
+                                                    </div>
+                                                </section>
+
                                                 <section className="pdf-section">
-                                                    <h2><span>01</span> Executive Summary <em>{'\uac1c\uc694'}</em></h2>
+                                                    <div className="pdf-section-heading">
+                                                        <span className="pdf-section-number">01</span>
+                                                        <div>
+                                                            <h2>Executive Summary</h2>
+                                                            <p>프로젝트 목적, 핵심 가치, 결과를 요약합니다.</p>
+                                                        </div>
+                                                    </div>
                                                     <div className="pdf-box">
                                                         <p className="pdf-text">{overview}</p>
                                                     </div>
                                                 </section>
 
                                                 <section className="pdf-section">
-                                                    <h2><span>02</span> Responsibilities <em>{'\uc5ed\ud560'}</em></h2>
+                                                    <div className="pdf-section-heading">
+                                                        <span className="pdf-section-number">02</span>
+                                                        <div>
+                                                            <h2>Responsibilities</h2>
+                                                            <p>프로젝트 내 담당 범위와 기여도를 정리합니다.</p>
+                                                        </div>
+                                                    </div>
                                                     <div className="pdf-box">
                                                         <pre className="pdf-code">{roles}</pre>
                                                     </div>
                                                 </section>
 
                                                 <section className="pdf-section">
-                                                    <h2><span>03</span> Technology Stack</h2>
+                                                    <div className="pdf-section-heading">
+                                                        <span className="pdf-section-number">03</span>
+                                                        <div>
+                                                            <h2>Technology Stack</h2>
+                                                            <p>프로젝트 구현에 사용한 주요 기술입니다.</p>
+                                                        </div>
+                                                    </div>
                                                     <ul className="pdf-tech-list">
                                                         {selectedTechs.map((tech) => (
                                                             <li key={tech} className="pdf-tech-item">
@@ -690,7 +773,13 @@ const PortfolioBuilder = () => {
 
                                                 {features.length > 0 && (
                                                     <section className="pdf-section">
-                                                        <h2><span>04</span> Key Features <em>{'\uc8fc\uc694 \uae30\ub2a5'}</em></h2>
+                                                        <div className="pdf-section-heading">
+                                                            <span className="pdf-section-number">04</span>
+                                                            <div>
+                                                                <h2>Key Features</h2>
+                                                                <p>사용자 문제를 해결한 핵심 기능입니다.</p>
+                                                            </div>
+                                                        </div>
                                                         <div className="pdf-feature-list">
                                                             {features.map((feature, idx) => (
                                                                 <div key={idx} className="pdf-item-card">
@@ -704,8 +793,15 @@ const PortfolioBuilder = () => {
 
                                                 {architectureImg.src && (
                                                     <section className="pdf-section">
-                                                        <h2><span>05</span> System Architecture <em>{'\uc2dc\uc2a4\ud15c \uc544\ud0a4\ud14d\ucc98'}</em></h2>
+                                                        <div className="pdf-section-heading">
+                                                            <span className="pdf-section-number">05</span>
+                                                            <div>
+                                                                <h2>System Architecture</h2>
+                                                                <p>서비스 구성과 데이터 흐름을 설명합니다.</p>
+                                                            </div>
+                                                        </div>
                                                         <div className="pdf-image-block full">
+                                                            <h4>시스템 아키텍처</h4>
                                                             <div className="pdf-img-wrapper">
                                                                 <img src={architectureImg.src} alt="Architecture" />
                                                             </div>
@@ -716,8 +812,15 @@ const PortfolioBuilder = () => {
 
                                                 {erdImg.src && (
                                                     <section className="pdf-section">
-                                                        <h2><span>06</span> Database ERD <em>{'\ub370\uc774\ud130\ubca0\uc774\uc2a4 ERD'}</em></h2>
+                                                        <div className="pdf-section-heading">
+                                                            <span className="pdf-section-number">06</span>
+                                                            <div>
+                                                                <h2>Database ERD</h2>
+                                                                <p>주요 엔티티와 관계 구조입니다.</p>
+                                                            </div>
+                                                        </div>
                                                         <div className="pdf-image-block full">
+                                                            <h4>데이터베이스 ERD</h4>
                                                             <div className="pdf-img-wrapper">
                                                                 <img src={erdImg.src} alt="Database ERD" />
                                                             </div>
@@ -728,10 +831,17 @@ const PortfolioBuilder = () => {
 
                                                 {uiImgs.length > 0 && (
                                                     <section className="pdf-section">
-                                                        <h2><span>07</span> User Interface <em>{'\uc8fc\uc694 UI \ud654\uba74'}</em></h2>
-                                                        <div className="pdf-images-grid">
+                                                        <div className="pdf-section-heading">
+                                                            <span className="pdf-section-number">07</span>
+                                                            <div>
+                                                                <h2>User Interface</h2>
+                                                                <p>주요 화면과 사용자 흐름입니다.</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="pdf-images-vertical-list">
                                                             {uiImgs.map((imageItem, idx) => (
-                                                                <div key={idx} className="pdf-image-block">
+                                                                <div key={idx} className="pdf-image-block full-width">
+                                                                    <h4>주요 UI 화면 {uiImgs.length > 1 ? `(${idx + 1})` : ''}</h4>
                                                                     <div className="pdf-img-wrapper">
                                                                         <img src={imageItem.src} alt={`UI screen ${idx + 1}`} />
                                                                     </div>
@@ -744,16 +854,22 @@ const PortfolioBuilder = () => {
 
                                                 {troubleshoots.length > 0 && (
                                                     <section className="pdf-section">
-                                                        <h2><span>08</span> Troubleshooting <em>{'\ubb38\uc81c \ud574\uacb0'}</em></h2>
+                                                        <div className="pdf-section-heading">
+                                                            <span className="pdf-section-number">08</span>
+                                                            <div>
+                                                                <h2>Troubleshooting</h2>
+                                                                <p>문제 원인, 해결 과정, 결과를 기록합니다.</p>
+                                                            </div>
+                                                        </div>
                                                         <div className="pdf-troubleshoot-list">
                                                             {troubleshoots.map((item, idx) => (
                                                                 <div key={idx} className="pdf-item-card ts-card">
                                                                     <div className="ts-issue">
-                                                                        <span className="ts-label-issue">{'\ubb38\uc81c'}</span>
+                                                                        <span className="ts-label-issue">문제</span>
                                                                         <p className="pdf-text">{item.issue}</p>
                                                                     </div>
                                                                     <div className="ts-resolution">
-                                                                        <span className="ts-label-resolution">{'\ud574\uacb0/\uacb0\uacfc'}</span>
+                                                                        <span className="ts-label-resolution">해결/결과</span>
                                                                         <p className="pdf-text">{item.resolution}</p>
                                                                     </div>
                                                                 </div>
@@ -764,24 +880,33 @@ const PortfolioBuilder = () => {
 
                                                 {metrics && (
                                                     <section className="pdf-section">
-                                                        <h2><span>09</span> Outcomes &amp; Metrics <em>{'\uc131\uacfc \ubc0f \uc9c0\ud45c'}</em></h2>
+                                                        <div className="pdf-section-heading">
+                                                            <span className="pdf-section-number">09</span>
+                                                            <div>
+                                                                <h2>Outcomes &amp; Metrics</h2>
+                                                                <p>성과, 개선 지표, 배운 점을 정리합니다.</p>
+                                                            </div>
+                                                        </div>
                                                         <div className="pdf-box">
                                                             <p className="pdf-text">{metrics}</p>
                                                         </div>
                                                     </section>
                                                 )}
                                             </div>
-                                            <div className="pdf-footer">
-                                                Generated By DevLog Portfolio Builder
+                                            <div className="pdf-page-footer">
+                                                <span>Generated By DevLog Portfolio Builder</span>
+                                                <strong>Page 1 / {pdfTotalPages}</strong>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <footer className="preview-modal-footer">
                                     <p className="footer-memo">PDF 추출 버튼을 통해 결과물을 다운로드하세요.</p>
-                                    <button className="btn-pdf-download" type="button" onClick={handleGeneratePDF} disabled={isDownloading}>
-                                        {isDownloading ? 'PDF 생성 중...' : 'PDF 다운로드'}
-                                    </button>
+                                    <div className="modal-footer-actions">
+                                        <button className="btn-pdf-download" onClick={handleGeneratePDF} disabled={isDownloading}>
+                                            {isDownloading ? '생성 중...' : 'PDF 추출 (Download)'}
+                                        </button>
+                                    </div>
                                 </footer>
                             </div>
                         </div>
