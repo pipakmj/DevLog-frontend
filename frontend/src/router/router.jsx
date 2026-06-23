@@ -8,14 +8,18 @@ import ProjectList from "../pages/ProjectList";
 import ProjectDetail from "../pages/ProjectDetail";
 import ProjectForm from "../pages/ProjectForm";
 import PostList from "../pages/PostList";
-import PostWrite from "../pages/PostWrite";
 import PostDetail from "../pages/PostDetail";
 import ProtectedRoute from "../components/ProtectedRoute";
 import FindPassword from "../pages/FindPassword";
 import ResetPassword from "../pages/ResetPassword";
 import Terms from '../pages/Terms.jsx';
 import TechTrends from '../pages/TechTrends.jsx';
-import PortfolioBuilder from '../pages/PortfolioBuilder.jsx';
+import { lazy, Suspense } from 'react';
+import LoadingSpinner from '../components/LoadingSpinner';
+
+const PortfolioBuilder = lazy(() => import('../pages/PortfolioBuilder.jsx'));
+const PortfolioShared = lazy(() => import('../pages/PortfolioShared.jsx'));
+const PostWrite = lazy(() => import('../pages/PostWrite.jsx'));
 
 export const router = createBrowserRouter([
     {
@@ -64,7 +68,13 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/portfolio/builder",
-                element: <ProtectedRoute><PortfolioBuilder /></ProtectedRoute>
+                element: (
+                    <ProtectedRoute>
+                        <Suspense fallback={<div className="loading-screen"><LoadingSpinner /></div>}>
+                            <PortfolioBuilder />
+                        </Suspense>
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "/posts",
@@ -72,11 +82,23 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/posts/write",
-                element: <ProtectedRoute><PostWrite /></ProtectedRoute>
+                element: (
+                    <ProtectedRoute>
+                        <Suspense fallback={<div className="loading-screen"><LoadingSpinner /></div>}>
+                            <PostWrite />
+                        </Suspense>
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "/posts/edit/:postId",
-                element: <ProtectedRoute><PostWrite /></ProtectedRoute>
+                element: (
+                    <ProtectedRoute>
+                        <Suspense fallback={<div className="loading-screen"><LoadingSpinner /></div>}>
+                            <PostWrite />
+                        </Suspense>
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "/posts/:postId",
@@ -92,4 +114,12 @@ export const router = createBrowserRouter([
             },
         ]
     },
+    {
+        path: "/portfolio/share/:shareToken",
+        element: (
+            <Suspense fallback={<div className="loading-screen"><LoadingSpinner /></div>}>
+                <PortfolioShared />
+            </Suspense>
+        )
+    }
 ]);

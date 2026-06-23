@@ -70,6 +70,7 @@ const PortfolioBuilder = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
+    const [shareModal, setShareModal] = useState({ isOpen: false, url: '', copied: false });
 
     // 요약 정보 상태 (직접 수정 가능)
     const [projectPeriod, setProjectPeriod] = useState('');
@@ -350,18 +351,30 @@ const PortfolioBuilder = () => {
     const handleShare = async () => {
         const savedPortfolioId = portfolioId || await persistPortfolio('COMPLETED');
         if (!savedPortfolioId) return;
+        setIsSaving(true);
         try {
             const response = await createPortfolioShareLink(savedPortfolioId, true);
             const data = getResponseData(response);
             const shareUrl = data?.shareUrl;
             if (shareUrl) {
-                await navigator.clipboard?.writeText(shareUrl);
-                alert('공유 링크가 생성되어 클립보드에 복사되었습니다.');
-            } else {
-                alert('공유 링크가 생성되었습니다.');
+                // 시스템 전체 URL을 고려하여 절대 경로로 처리 (필요시 window.location.origin 사용)
+                const fullUrl = shareUrl.startsWith('http') ? shareUrl : `${window.location.origin}${shareUrl}`;
+                setShareModal({ isOpen: true, url: fullUrl, copied: false });
             }
         } catch (error) {
             alert(error.response?.data?.message || '공유 링크 생성에 실패했습니다.');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const copyShareUrl = async () => {
+        try {
+            await navigator.clipboard.writeText(shareModal.url);
+            setShareModal(prev => ({ ...prev, copied: true }));
+            setTimeout(() => setShareModal(prev => ({ ...prev, copied: false })), 2000);
+        } catch {
+            alert('클립보드 복사에 실패했습니다.');
         }
     };
 
@@ -947,6 +960,31 @@ const PortfolioBuilder = () => {
                                         </button>
                                     </div>
                                 </footer>
+                            </div>
+                        </div>
+                    )}
+
+                    {shareModal.isOpen && (
+                        <div className="preview-modal-overlay fadeIn" onClick={() => setShareModal(prev => ({ ...prev, isOpen: false }))}>
+                            <div className="share-modal-card scaleUp" onClick={e => e.stopPropagation()}>
+                                <div className="share-modal-header">
+                                    <h3>🎉 공유 링크가 생성되었습니다!</h3>
+                                    <button className="btn-close" onClick={() => setShareModal(prev => ({ ...prev, isOpen: false }))}>&times;</button>
+                                </div>
+                                <div className="share-modal-body">
+                                    <p>나의 포트폴리오를 동료나 채용 담당자에게 공유해 보세요.</p>
+                                    <div className="share-url-box">
+                                        <input type="text" readOnly value={shareModal.url} className="share-url-input" />
+                                        <button className={`btn-copy ${shareModal.copied ? 'success' : ''}`} onClick={copyShareUrl}>
+                                            {shareModal.copied ? '복사 완료!' : '복사하기'}
+                                        </button>
+                                    </div>
+                                    <div className="share-modal-actions">
+                                        <a href={shareModal.url} target="_blank" rel="noopener noreferrer" className="btn-preview-link">
+                                            새 탭에서 확인하기
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}
