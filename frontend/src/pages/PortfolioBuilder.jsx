@@ -45,6 +45,24 @@ const normalizeTechStack = (techStack = []) => {
 
 const getResponseData = (response) => response?.data?.data ?? response?.data;
 
+const formatAiUsageNotice = (usageLimit = {}, fallback = 'AI 진단 및 보완이 완료되었습니다.') => {
+    const remainingUsage = usageLimit.remaining ?? usageLimit.remainingUsage;
+    const dailyLimit = usageLimit.dailyLimit;
+    const resetAt = usageLimit.resetAt;
+    const usageText = remainingUsage !== undefined && dailyLimit !== undefined
+        ? `오늘 남은 AI 개선 사용량: ${remainingUsage}/${dailyLimit}회`
+        : remainingUsage !== undefined
+            ? `오늘 남은 AI 개선 사용량: ${remainingUsage}회`
+            : fallback;
+
+    if (!resetAt) return usageText;
+
+    const resetDate = new Date(resetAt);
+    return Number.isNaN(resetDate.getTime())
+        ? usageText
+        : `${usageText} \n (초기화: ${resetDate.toLocaleString('ko-KR')})`;
+};
+
 const PortfolioBuilder = () => {
     const sidebarRef = React.useRef(null);
     const [projects, setProjects] = useState([]);
@@ -63,7 +81,7 @@ const PortfolioBuilder = () => {
     const [uiImgs, setUiImgs] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
     const [aiScore, setAiScore] = useState(null);
-    const [showAiSuccess, setShowAiSuccess] = useState(false);
+    const [aiUsageNotice, setAiUsageNotice] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -323,6 +341,7 @@ const PortfolioBuilder = () => {
 
     const handleGenerateAIDraft = async () => {
         setIsGenerating(true);
+        setAiUsageNotice('');
         try {
             const response = await getPortfolioAiFeedback(buildPortfolioPayload('DRAFT'));
             const data = getResponseData(response);
@@ -335,12 +354,18 @@ const PortfolioBuilder = () => {
                 setTroubleshoots((prev) => (prev.length > 0 ? prev : autoCompletedFields.troubleshoots));
             }
             if (Array.isArray(data?.suggestions)) setSuggestions(data.suggestions);
+
+            setAiUsageNotice(formatAiUsageNotice(data?.usageLimit ?? data));
         } catch (error) {
-            alert(error.response?.data?.message || 'AI 피드백을 불러오지 못했습니다.');
+            const errorData = getResponseData(error.response);
+            if (errorData?.usageLimit) {
+                setAiUsageNotice(formatAiUsageNotice(errorData.usageLimit, error.response?.data?.message || 'AI 피드백을 불러오지 못했습니다.'));
+                setTimeout(() => {
+                    setAiUsageNotice('');
+                }, 5000);
+            }
         } finally {
             setIsGenerating(false);
-            setShowAiSuccess(true);
-            setTimeout(() => setShowAiSuccess(false), 3000);
             // AI 알림 및 사이드바 상단 이동
             if (sidebarRef.current) {
                 sidebarRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -689,9 +714,9 @@ const PortfolioBuilder = () => {
                                 </div>
                             )}
 
-                            {showAiSuccess && (
-                                <div className="ai-success-toast">
-                                    ✨ AI 진단 및 보완이 완료되었습니다!
+                            {aiUsageNotice && (
+                                <div className="ai-success-toast" >
+                                    {aiUsageNotice}
                                 </div>
                             )}
                             <div className="feedback-header">

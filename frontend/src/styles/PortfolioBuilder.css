@@ -649,6 +649,7 @@ button {
     text-align: center;
     margin-bottom: 20px;
     animation: fadeInDownPulse 0.4s ease-out;
+    white-space: pre-line;
 }
 
 @keyframes fadeInDownPulse {
