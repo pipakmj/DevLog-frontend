@@ -360,10 +360,13 @@ const PortfolioBuilder = () => {
             const errorData = getResponseData(error.response);
             if (errorData?.usageLimit) {
                 setAiUsageNotice(formatAiUsageNotice(errorData.usageLimit, error.response?.data?.message || 'AI 피드백을 불러오지 못했습니다.'));
-                setTimeout(() => {
-                    setAiUsageNotice('');
-                }, 5000);
+                
+            } else { 
+                setAiUsageNotice(error.response?.data?.message || 'AI 피드백을 불러오지 못했습니다.')
             }
+            setTimeout(() => {
+                setAiUsageNotice('');
+            }, 5000);
         } finally {
             setIsGenerating(false);
             // AI 알림 및 사이드바 상단 이동
